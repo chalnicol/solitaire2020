@@ -437,7 +437,7 @@ window.onload = function () {
 
                     var tile = this.add.image (0, 0, 'tiles' ).setScale (tileW/158);
                     
-                    var img = this.add.image (0,0, 'thumbs', data.content ).setScale (tileW/70 * 0.75).setVisible(true);
+                    var img = this.add.image (0,0, 'thumbs', 0 ).setScale (tileW/70 * 0.75).setVisible(true);
 
                     miniCont.add ([tile, img]);
 

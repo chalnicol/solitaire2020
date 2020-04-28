@@ -116,28 +116,14 @@ window.onload = function () {
         preload: function ()
         {
 
-            var rctW = _gW * 0.5, 
-                rctH = _gH * 0.025,
-                rctX = (_gW - rctW)/2,
-                rctY = _gH/2;
-            
-            this.loadrect = this.add.rectangle ( rctX, rctY, rctW * 0.02, rctH, 0x9e9e9e, 1 ).setOrigin(0);
-
-            var txtConfig = {
-                color : "#333",
-                fontSize : _gH * 0.02,
-                fontFamily : 'Coda'
-            }
-            this.loadtxt = this.add.text ( _gW/2, _gH * 0.48, 'Loading Files..', txtConfig ) .setOrigin(0.5);
-
-
+          
             this.load.audioSprite('sfx', 'client/assets/sfx/fx_mixdown.json', [
                 'client/assets/sfx/sfx.ogg',
                 'client/assets/sfx/sfx.mp3'
             ]);
-            this.load.audio ('bgsound', ['client/assets/sfx/puzzlebg.ogg', 'assets/sfx/puzzlebg.mp3'] );
+            this.load.audio ('bgsound', ['client/assets/sfx/drumsofwar.ogg', 'assets/sfx/drumsofwar.mp3'] );
 
-            this.load.audio ('bgsound2', ['client/assets/sfx/puzzlebg2.ogg', 'assets/sfx/puzzlebg2.mp3'] );
+            this.load.audio ('bgsound2', ['client/assets/sfx/siege.ogg', 'assets/sfx/siege.mp3'] );
 
             this.load.spritesheet('thumbs', 'client/assets/images/spritesheet.png', { frameWidth: 70, frameHeight: 70 });
 
@@ -167,6 +153,23 @@ window.onload = function () {
             this.load.image ('prompt', 'client/assets/images/prompt.png');
 
             this.load.image ('best_scores', 'client/assets/images/best_scores.png');
+
+
+            var rctW = _gW * 0.5, 
+            rctH = _gH * 0.025,
+            rctX = (_gW - rctW)/2,
+            rctY = _gH/2;
+        
+            this.loadrect = this.add.rectangle ( rctX, rctY, rctW * 0.02, rctH, 0x9e9e9e, 1 ).setOrigin(0);
+
+            var txtConfig = {
+                color : "#333",
+                fontSize : _gH * 0.02,
+                fontFamily : 'Coda'
+            }
+            this.loadtxt = this.add.text ( _gW/2, _gH * 0.48, 'Loading Files..', txtConfig ) .setOrigin(0.5);
+
+
 
             //...
             this.load.on('progress', function (value) {
@@ -786,6 +789,7 @@ window.onload = function () {
             this.scene.start ('sceneA');
 
         }
+
     });
 
 

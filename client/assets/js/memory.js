@@ -354,7 +354,7 @@ window.onload = function () {
 
             });
 
-
+            /*
             var skipbtn = this.add.image (_gW * 0.74, _gH * 0.02, 'skip_btn').setScale (_gW/720).setOrigin(0).setInteractive();
 
             skipbtn.on('pointerover', function () {
@@ -370,6 +370,7 @@ window.onload = function () {
 
             });
 
+            */
 
             var best_btn = this.add.image (_gW/2, _gH * 0.9, 'best_btn').setScale (_gW/720).setInteractive();
 

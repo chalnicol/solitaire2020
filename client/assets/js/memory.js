@@ -117,14 +117,14 @@ window.onload = function () {
         {
 
           
-            this.load.audioSprite('sfx', 'client/assets/sfx/fx_mixdown.json', [
+            /* this.load.audioSprite('sfx', 'client/assets/sfx/fx_mixdown.json', [
                 'client/assets/sfx/sfx.ogg',
                 'client/assets/sfx/sfx.mp3'
             ]);
             this.load.audio ('bgsound', ['client/assets/sfx/puzzlebg.ogg', 'assets/sfx/puzzlebg.mp3'] );
 
             this.load.audio ('bgsound2', ['client/assets/sfx/puzzlebg2.ogg', 'assets/sfx/puzzlebg2.mp3'] );
-
+            */
             this.load.spritesheet('thumbs', 'client/assets/images/spritesheet.png', { frameWidth: 70, frameHeight: 70 });
 
             this.load.spritesheet('tiles', 'client/assets/images/tiles.png', { frameWidth: 158, frameHeight: 158 });
@@ -195,7 +195,7 @@ window.onload = function () {
 
             this.loadrect.destroy();
 
-            this.initMenuSound ();
+            //this.initMenuSound ();
 
             this.initMenuInterface ();
            
@@ -305,7 +305,7 @@ window.onload = function () {
             this.col = 4;
             this.gmLvl = 1;
 
-            this.initSound ();
+            //this.initSound ();
 
             this.initGameInterface ();
 
@@ -781,7 +781,7 @@ window.onload = function () {
 
         },
         playSound (id , vol = 0.8) {
-            this.music.play (id, { volume : vol })
+           // this.music.play (id, { volume : vol })
         },
         leaveGame : function () {
 

@@ -123,7 +123,7 @@ window.onload = function () {
             ]);
             
             
-            this.load.audio ('bgsound', ['client/assets/sfx/bgsound.ogg', 'assets/sfx/bgsound.mp3'] );
+            //this.load.audio ('bgsound', ['client/assets/sfx/bgsound.ogg', 'assets/sfx/bgsound.mp3'] );
 
             //this.load.audio ('bgsound2', ['client/assets/sfx/bubble_puzzler.ogg', 'assets/sfx/bubble_puzzler.mp3'] );
             
@@ -162,7 +162,7 @@ window.onload = function () {
             rctX = (_gW - rctW)/2,
             rctY = _gH/2;
         
-            this.loadrect = this.add.rectangle ( rctX, rctY, rctW * 0.02, rctH, 0x9e9e9e, 1 ).setOrigin(0);
+           
 
             var txtConfig = {
                 color : "#333",
@@ -170,8 +170,8 @@ window.onload = function () {
                 fontFamily : 'Coda'
             }
             this.loadtxt = this.add.text ( _gW/2, _gH * 0.48, 'Loading Files..', txtConfig ) .setOrigin(0.5);
-
-
+            
+            this.loadrect = this.add.rectangle ( rctX, rctY, rctW * 0.02, rctH, 0x9e9e9e, 1 ).setOrigin(0);
 
             //...
             this.load.on('progress', function (value) {
@@ -188,13 +188,11 @@ window.onload = function () {
                 this.loadtxt.destroy();
             }, this );
 
-
         },
 
         create: function () {
             
             this.loadtxt.destroy();
-
             this.loadrect.destroy();
 
             this.initMenuSound ();
@@ -206,8 +204,7 @@ window.onload = function () {
 
             this.music = this.sound.addAudioSprite('sfx');
 
-            this.bgmusic = this.sound.add('bgsound').setVolume(0.2).setLoop(true);
-            this.bgmusic.play();
+            //this.bgmusic = this.sound.add('bgsound').setVolume(0.2).setLoop(true).play();
 
         },
         initMenuInterface : function () {
@@ -270,7 +267,7 @@ window.onload = function () {
 
             setTimeout(() => {
 
-                _this.bgmusic.stop();
+                //_this.bgmusic.stop();
 
                 _this.scene.start( 'sceneB' );
 
@@ -318,8 +315,7 @@ window.onload = function () {
 
             this.music = this.sound.addAudioSprite('sfx');
 
-            this.bgmusic = this.sound.add('bgsound').setVolume(0.2).setLoop(true);
-            this.bgmusic.play();
+            //this.bgmusic = this.sound.add('bgsound').setVolume(0.2).setLoop(true).play();
 
         },
         initGameInterface : function () {
@@ -787,7 +783,7 @@ window.onload = function () {
         },
         leaveGame : function () {
 
-            this.bgmusic.stop ();
+            //this.bgmusic.stop ();
             this.scene.start ('sceneA');
 
         }

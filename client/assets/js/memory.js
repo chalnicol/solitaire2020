@@ -122,9 +122,9 @@ window.onload = function () {
                 'client/assets/sfx/sfx.mp3'
             ]);
             
-            /*
+            
             this.load.audio ('bgsound', ['client/assets/sfx/puzzlebg.ogg', 'assets/sfx/puzzlebg.mp3'] );
-
+/*
             this.load.audio ('bgsound2', ['client/assets/sfx/puzzlebg2.ogg', 'assets/sfx/puzzlebg2.mp3'] );
             */
             this.load.spritesheet('thumbs', 'client/assets/images/spritesheet.png', { frameWidth: 70, frameHeight: 70 });
@@ -206,8 +206,8 @@ window.onload = function () {
 
             this.music = this.sound.addAudioSprite('sfx');
 
-            //this.bgmusic = this.sound.add('bgsound').setVolume(0.2).setLoop(true);
-            //this.bgmusic.play();
+            this.bgmusic = this.sound.add('bgsound').setVolume(0.2).setLoop(true);
+            this.bgmusic.play();
 
         },
         initMenuInterface : function () {
@@ -270,7 +270,7 @@ window.onload = function () {
 
             setTimeout(() => {
 
-                //_this.bgmusic.stop();
+                _this.bgmusic.stop();
 
                 _this.scene.start( 'sceneB' );
 
@@ -318,8 +318,8 @@ window.onload = function () {
 
             this.music = this.sound.addAudioSprite('sfx');
 
-            //this.bgmusic = this.sound.add('bgsound2').setVolume(0.2).setLoop(true);
-            //this.bgmusic.play();
+            this.bgmusic = this.sound.add('bgsound').setVolume(0.2).setLoop(true);
+            this.bgmusic.play();
 
         },
         initGameInterface : function () {
@@ -787,7 +787,7 @@ window.onload = function () {
         },
         leaveGame : function () {
 
-            //this.bgmusic.stop ();
+            this.bgmusic.stop ();
             this.scene.start ('sceneA');
 
         }

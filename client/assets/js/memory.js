@@ -189,7 +189,6 @@ window.onload = function () {
             }, this );
 
         },
-
         create: function () {
             
             this.loadtxt.destroy();
@@ -404,6 +403,8 @@ window.onload = function () {
         },
         createTiles : function ( row, col ) {
 
+            this.grid = [];
+
             this.tiles = [];
 
             var totlW = _gW * 0.88,
@@ -430,9 +431,8 @@ window.onload = function () {
                     var data = {
                         id : counter,
                         content : frames [counter ] + 1,
-                        x : xp, y : yp,
+                        gridPost : counter,
                         isRevealed : false,
-                        isOpen : false
                     };
 
                     var miniCont = this.add.container ( _gW/2, _gH/2 ).setSize (tileW, tileW).setData(data);
@@ -477,6 +477,8 @@ window.onload = function () {
                         }
                     });
 
+                    this.grid.push ({ 'x':xp, 'y':yp });
+
                     this.tiles.push (miniCont);
                     
                     counter++;
@@ -514,14 +516,17 @@ window.onload = function () {
                 var tile1 = this.tiles [ this.openTiles[0].id ],
                     tile2 = this.tiles [ this.openTiles[1].id ];
 
+                tile1.setData('isRevealed', true );
+                tile2.setData('isRevealed', true );
+                
                 this.tweens.add ({
                     targets : [ tile1, tile2 ],
                     scaleX : 1.1,
                     scaleY : 1.1,
                     duration : 100,
                     yoyo : true,
-                    //easeParams : [0.5, 1],
-                    ease : 'Quad.easeIn'
+                    //delay : 100,
+                    ease : 'Cubic.easeIn'
                 });
 
                 this.halt = false;
@@ -549,9 +554,16 @@ window.onload = function () {
 
             }else {
 
+
+               
+
                 //console.log ('err');
                 setTimeout(() => {
-                    _this.playSound ('negative')
+
+                    _this.shakeUpGrid ();
+
+                    _this.playSound ('move', 0.4 )
+
                 }, 300 );
 
                 setTimeout (() => {
@@ -568,10 +580,95 @@ window.onload = function () {
                     _this.halt = false;
     
                     _this.openTiles = [];
-    
+
                 }, 1000);
 
             }
+        },
+        shakeUpGrid : function () {
+
+            var drt = 200;
+            
+            if ( this.gmLvl == 1 ) {
+
+                var tile1 = this.tiles [ this.openTiles[0].id ],
+                    tile2 = this.tiles [ this.openTiles[1].id ];
+                
+                var grid1 = tile1.getData('gridPost');
+                var grid2 = tile2.getData('gridPost');
+                
+                this.tweens.add ({
+                    targets : tile1,
+                    x : this.grid [grid2].x,
+                    y : this.grid [grid2].y,
+                    duration : drt,
+                    ease : 'Power3' 
+                });
+                this.tweens.add ({
+                    targets : tile2,
+                    x : this.grid [grid1].x,
+                    y : this.grid [grid1].y,
+                    duration : drt,
+                    ease : 'Power3' 
+                });
+
+                tile1.setData ('gridPost', grid2);
+                tile2.setData ('gridPost', grid1);
+                
+            }
+
+            else  {
+
+                //get tiles and push to temp arr..
+                var tempArr = [];
+
+                for ( var i in this.tiles ) {
+                    if ( !this.tiles [i].getData ('isRevealed') ) {
+                        tempArr.push ( this.tiles[i].getData('gridPost') );
+                    }
+                }
+
+                //console.log ( tempArr );
+
+                //randomize..
+                var gridArr = [];
+
+                while ( tempArr.length > 0 ) {
+
+                    var randomIndex = Math.floor ( Math.random() * tempArr.length );
+
+                    gridArr.push ( tempArr[randomIndex] );
+
+                    tempArr.splice ( randomIndex, 1);
+                }
+
+                //and set..
+
+                var counter = 0;
+
+                for ( var i in this.tiles ) {
+
+                    if ( !this.tiles [i].getData ('isRevealed') ) {
+
+                        this.tweens.add ({
+                            targets : this.tiles [i],
+                            x : this.grid [gridArr [counter]].x,
+                            y : this.grid [gridArr [counter]].y,
+                            duration : 500,
+                            ease : 'Power3' 
+                        });
+    
+                        this.tiles [i].setData ('gridPost', gridArr[counter]);
+
+                        counter++;
+
+                    }
+
+                }
+
+                
+            }
+            
         },
         generateFrames : function( total ) {
 
@@ -719,7 +816,7 @@ window.onload = function () {
 
             var configtxt = {
                 color : '#dedede',
-                fontFamily : 'Impact',
+                fontFamily : 'Coda',
                 //fontStyle : 'bold',
                 fontSize : _gH * 0.07
             }

@@ -131,11 +131,19 @@
       "loop": false
     },
 
-    "negative": {
+    "explosiona": {
       "start": 16.2,
-      "end": 17.1,
+      "end": 17.2,
+      "loop": false
+    },
+
+    "explosionb": {
+      "start": 17.4,
+      "end": 18.5,
       "loop": false
     }
+    
+    
     
   }
 }

@@ -123,10 +123,10 @@ window.onload = function () {
             ]);
             
             
-            this.load.audio ('bgsound', ['client/assets/sfx/puzzlebg.ogg', 'assets/sfx/puzzlebg.mp3'] );
-/*
+            //this.load.audio ('bgsound', ['client/assets/sfx/puzzlebg.ogg', 'assets/sfx/puzzlebg.mp3'] );
+
             this.load.audio ('bgsound2', ['client/assets/sfx/puzzlebg2.ogg', 'assets/sfx/puzzlebg2.mp3'] );
-            */
+            
             this.load.spritesheet('thumbs', 'client/assets/images/spritesheet.png', { frameWidth: 70, frameHeight: 70 });
 
             this.load.spritesheet('tiles', 'client/assets/images/tiles.png', { frameWidth: 158, frameHeight: 158 });

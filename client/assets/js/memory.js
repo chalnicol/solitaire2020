@@ -117,10 +117,12 @@ window.onload = function () {
         {
 
           
-            /* this.load.audioSprite('sfx', 'client/assets/sfx/fx_mixdown.json', [
+            this.load.audioSprite('sfx', 'client/assets/sfx/fx_mixdown.json', [
                 'client/assets/sfx/sfx.ogg',
                 'client/assets/sfx/sfx.mp3'
             ]);
+            
+            /*
             this.load.audio ('bgsound', ['client/assets/sfx/puzzlebg.ogg', 'assets/sfx/puzzlebg.mp3'] );
 
             this.load.audio ('bgsound2', ['client/assets/sfx/puzzlebg2.ogg', 'assets/sfx/puzzlebg2.mp3'] );
@@ -195,7 +197,7 @@ window.onload = function () {
 
             this.loadrect.destroy();
 
-            //this.initMenuSound ();
+            this.initMenuSound ();
 
             this.initMenuInterface ();
            
@@ -204,8 +206,8 @@ window.onload = function () {
 
             this.music = this.sound.addAudioSprite('sfx');
 
-            this.bgmusic = this.sound.add('bgsound').setVolume(0.2).setLoop(true);
-            this.bgmusic.play();
+            //this.bgmusic = this.sound.add('bgsound').setVolume(0.2).setLoop(true);
+            //this.bgmusic.play();
 
         },
         initMenuInterface : function () {
@@ -268,7 +270,7 @@ window.onload = function () {
 
             setTimeout(() => {
 
-                _this.bgmusic.stop();
+                //_this.bgmusic.stop();
 
                 _this.scene.start( 'sceneB' );
 
@@ -305,7 +307,7 @@ window.onload = function () {
             this.col = 4;
             this.gmLvl = 1;
 
-            //this.initSound ();
+            this.initSound ();
 
             this.initGameInterface ();
 
@@ -316,8 +318,8 @@ window.onload = function () {
 
             this.music = this.sound.addAudioSprite('sfx');
 
-            this.bgmusic = this.sound.add('bgsound2').setVolume(0.2).setLoop(true);
-            this.bgmusic.play();
+            //this.bgmusic = this.sound.add('bgsound2').setVolume(0.2).setLoop(true);
+            //this.bgmusic.play();
 
         },
         initGameInterface : function () {
@@ -781,11 +783,11 @@ window.onload = function () {
 
         },
         playSound (id , vol = 0.8) {
-           // this.music.play (id, { volume : vol })
+           this.music.play (id, { volume : vol })
         },
         leaveGame : function () {
 
-            this.bgmusic.stop ();
+            //this.bgmusic.stop ();
             this.scene.start ('sceneA');
 
         }

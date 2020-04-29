@@ -9,11 +9,10 @@
     "express": "^4.17.1"
   },
   "engines": {
-    "node": "^6.10.0"
+    "node": "^12.1.0"
   },
   "devDependencies": {},
   "scripts": {
     "start": "node app.js"
   }
 }
-

@@ -206,7 +206,7 @@ window.onload = function () {
 
             this.music = this.sound.addAudioSprite('sfx');
 
-            this.bgmusic = this.sound.add('bgsound').setVolume(0.2).setLoop(true);
+            this.bgmusic = this.sound.add('bgsound2').setVolume(0.2).setLoop(true);
             this.bgmusic.play();
 
         },
@@ -318,7 +318,7 @@ window.onload = function () {
 
             this.music = this.sound.addAudioSprite('sfx');
 
-            this.bgmusic = this.sound.add('bgsound').setVolume(0.2).setLoop(true);
+            this.bgmusic = this.sound.add('bgsound2').setVolume(0.2).setLoop(true);
             this.bgmusic.play();
 
         },

@@ -405,7 +405,10 @@ window.onload = function () {
         initGame : function () {
 
 
-            this.scoreTotal = this.row * this.col / 2;
+            var r = this.gmData[this.gmLvl - 1].r,
+                c = this.gmData[this.gmLvl - 1].c;
+
+            this.scoreTotal = r * c / 2;
 
             this.score = 0;
 
@@ -414,7 +417,7 @@ window.onload = function () {
             this.lvlText.text = 'Level : ' + this.gmLvl;
             this.movText.text = 'Moves : ' + this.moves;
 
-            this.createTiles ( this.gmData[this.gmLvl - 1].r, this.gmData[this.gmLvl - 1].c );
+            this.createTiles ( r, c );
 
             var _this = this;
 
@@ -473,7 +476,7 @@ window.onload = function () {
 
                     var tile = this.add.image (0, 0, 'tiles' ).setScale (tileW/158);
                     
-                    var img = this.add.image (0,0, 'thumbs', 0 ).setScale (tileW/70 * 0.75).setVisible(true);
+                    var img = this.add.image (0,0, 'thumbs', data.content ).setScale (tileW/70 * 0.75).setVisible(true);
 
                     miniCont.add ([tile, img]);
 
@@ -960,7 +963,7 @@ window.onload = function () {
             this.initGame ();
 
         },
-        playSound (id , vol = 0.8) {
+        playSound (id , vol = 0.6) {
            this.music.play (id, { volume : vol })
         },
         leaveGame : function () {

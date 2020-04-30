@@ -135,6 +135,8 @@ window.onload = function () {
 
             this.load.spritesheet('best_btn', 'client/assets/images/best_btn.png', { frameWidth: 645, frameHeight: 89 });
 
+            this.load.spritesheet ('skip_btn', 'client/assets/images/skip_btn.png', { frameWidth: 50, frameHeight: 50 });
+
 
             this.load.image ('bg', 'client/assets/images/bg.png');
 
@@ -149,8 +151,6 @@ window.onload = function () {
             this.load.image ('panel', 'client/assets/images/panel.png');
 
             this.load.image ('home_btn', 'client/assets/images/home_btn.png');
-
-            this.load.image ('skip_btn', 'client/assets/images/skip_btn.png');
 
             this.load.image ('prompt', 'client/assets/images/prompt.png');
 
@@ -299,9 +299,10 @@ window.onload = function () {
 
             this.halt = false;
             
-            this.row = 5;
-            this.col = 4;
             this.gmLvl = 1;
+
+           
+            this.gmData = [{ r : 5, c : 4 }, { r : 6, c : 5 }, { r : 7, c : 6 } ];
 
             this.initSound ();
 
@@ -340,38 +341,6 @@ window.onload = function () {
             this.movText.setShadow  ( 0, 2, '#3a3a3a', 3, false, true );
 
            
-            var homebtn = this.add.image (_gW * 0.05, _gH * 0.02, 'home_btn').setScale (_gW/720).setOrigin(0).setInteractive();
-
-            homebtn.on('pointerover', function () {
-                this.setTint (0xff6a6a);
-            });
-            homebtn.on('pointerout', function () {
-                this.clearTint();
-            });
-            homebtn.on('pointerdown', function () {
-                //..
-                _this.leaveGame();
-
-            });
-
-            /*
-            var skipbtn = this.add.image (_gW * 0.74, _gH * 0.02, 'skip_btn').setScale (_gW/720).setOrigin(0).setInteractive();
-
-            skipbtn.on('pointerover', function () {
-                this.setTint (0xff6a6a);
-            });
-            skipbtn.on('pointerout', function () {
-                this.clearTint();
-            });
-            skipbtn.on('pointerdown', function () {
-                //..
-                //_this.scene.start('sceneA');
-                console.log ( 'todo');
-
-            });
-
-            */
-
             var best_btn = this.add.image (_gW/2, _gH * 0.9, 'best_btn').setScale (_gW/720).setInteractive();
 
             best_btn.on('pointerover', function () {
@@ -386,8 +355,55 @@ window.onload = function () {
                 _this.showBestScores();
             });
 
+
+            var homebtn = this.add.image (_gW * 0.05, _gH * 0.02, 'home_btn').setScale (_gW/720).setOrigin(0).setInteractive();
+
+            homebtn.on('pointerover', function () {
+                this.setTint (0xff6a6a);
+            });
+            homebtn.on('pointerout', function () {
+                this.clearTint();
+            });
+            homebtn.on('pointerdown', function () {
+                //..
+
+                _this.playSound ('clicka')
+
+                _this.leaveGame();
+
+            });
+
+
+            this.skipBtn = [];
+
+            var skpZ = Math.floor ( 50 * _gW/720 ),
+                skpS = skpZ * 0.3;
+
+            for ( var i = 0; i < 2; i++ ) {
+
+                var ids = i == 0 ? 'prev' : 'next';
+
+                var skip = this.add.image ((_gW * 0.77 ) + i * (skpZ+skpS), _gH * 0.02, 'skip_btn' , i ).setScale (_gW/720).setData('id', ids).setOrigin(0).setInteractive();
+                skip.on('pointerover', function () {
+                    this.setTint (0xff6a6a);
+                });
+                skip.on('pointerout', function () {
+                    this.clearTint();
+                });
+                skip.on('pointerdown', function () {
+                    
+                     _this.playSound ('clicka')
+
+                    _this.navigateToLevel ( this.getData ('id') );
+                });
+
+                this.skipBtn.push ( skip );
+
+            }
+
         },
         initGame : function () {
+
 
             this.scoreTotal = this.row * this.col / 2;
 
@@ -398,7 +414,23 @@ window.onload = function () {
             this.lvlText.text = 'Level : ' + this.gmLvl;
             this.movText.text = 'Moves : ' + this.moves;
 
-            this.createTiles ( this.row, this.col );
+            this.createTiles ( this.gmData[this.gmLvl - 1].r, this.gmData[this.gmLvl - 1].c );
+
+            var _this = this;
+
+            setTimeout(() => {
+
+                _this.skipBtn[0].setInteractive().setAlpha(1);
+                _this.skipBtn[1].setInteractive().setAlpha(1);
+
+                if ( _this.gmLvl == 1 ) {
+                    _this.skipBtn[0].disableInteractive().setAlpha (0.5);
+                }
+                if ( _this.gmLvl == 3 ) {
+                    _this.skipBtn[1].disableInteractive().setAlpha (0.5);;
+                }
+                
+            }, 500 );
 
         },
         createTiles : function ( row, col ) {
@@ -622,18 +654,15 @@ window.onload = function () {
                 
             }
 
-            else  {
+            else if ( this.gmLvl == 2)  {
 
                 //get tiles and push to temp arr..
                 var tempArr = [];
-
                 for ( var i in this.tiles ) {
                     if ( !this.tiles [i].getData ('isRevealed') ) {
                         tempArr.push ( this.tiles[i].getData('gridPost') );
                     }
                 }
-
-                //console.log ( tempArr );
 
                 //randomize..
                 var gridArr = [];
@@ -648,9 +677,7 @@ window.onload = function () {
                 }
 
                 //and set..
-
                 var counter = 0;
-
                 for ( var i in this.tiles ) {
 
                     if ( !this.tiles [i].getData ('isRevealed') ) {
@@ -671,7 +698,42 @@ window.onload = function () {
 
                 }
 
-                
+            }
+
+            else {
+
+                var tempArr = [];
+                for ( var i in this.tiles ) {
+                    tempArr.push ( this.tiles[i].getData('gridPost') );
+                }
+
+                //randomize..
+                var gridArr = [];
+
+                while ( tempArr.length > 0 ) {
+
+                    var randomIndex = Math.floor ( Math.random() * tempArr.length );
+
+                    gridArr.push ( tempArr[randomIndex] );
+
+                    tempArr.splice ( randomIndex, 1);
+                }
+
+                //and set..
+                var counter = 0;
+                for ( var i in this.tiles ) {
+                    this.tweens.add ({
+                        targets : this.tiles [i],
+                        x : this.grid [gridArr [counter]].x,
+                        y : this.grid [gridArr [counter]].y,
+                        duration : 500,
+                        ease : 'Power3' 
+                    });
+
+                    this.tiles [i].setData ('gridPost', gridArr[counter]);
+
+                    counter++;
+                }
             }
             
         },
@@ -796,7 +858,10 @@ window.onload = function () {
                 onComplete : function () {
                     _this.promptScreen.destroy ();
                     _this.bgRect.destroy();
-                    if ( _this.gmLvl < 3) _this.nextLevel ();
+                    if ( _this.gmLvl < 3) {
+                        _this.gmLvl += 1;
+                        _this.changeLevel ();
+                    }
                 }
             });
 
@@ -869,13 +934,28 @@ window.onload = function () {
 
 
         },
-        nextLevel : function () {
+        navigateToLevel : function ( id ) {
+
+            switch (id) {
+                case 'prev': 
+                    if ( this.gmLvl == 1 ) return;
+                    this.gmLvl += -1;
+                    break;
+                case 'next':
+                    if ( this.gmLvl == 3 ) return;
+                    this.gmLvl += 1;
+                    break;
+            }
+
+            this.changeLevel ();
+        },
+        changeLevel : function () {
+            
+            for ( var i in this.skipBtn ) {
+                this.skipBtn[i].disableInteractive ().setAlpha (0.5);
+            }
             
             this.removeTiles();
-
-            this.row += 1;
-            this.col += 1;
-            this.gmLvl += 1;
 
             this.initGame ();
 

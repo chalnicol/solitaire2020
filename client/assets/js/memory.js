@@ -407,6 +407,8 @@ window.onload = function () {
 
             this.tiles = [];
 
+            this.tilesContainer = this.add.container ( 0, 0 );
+
             var totlW = _gW * 0.88,
                 tempW = totlW/col,
                 tileW = tempW * 0.98,
@@ -481,6 +483,8 @@ window.onload = function () {
 
                     this.tiles.push (miniCont);
                     
+                    this.tilesContainer.add ( miniCont );
+
                     counter++;
                 }
             }
@@ -489,9 +493,7 @@ window.onload = function () {
 
         },
         removeTiles : function () {
-            for ( var i in this.tiles) {
-                this.tiles[i].destroy ();
-            }
+            this.tilesContainer.destroy ();
         },
         tileClick : function ( data ) {
             
@@ -596,6 +598,9 @@ window.onload = function () {
                 
                 var grid1 = tile1.getData('gridPost');
                 var grid2 = tile2.getData('gridPost');
+                
+                this.tilesContainer.bringToTop ( tile1 );
+                this.tilesContainer.bringToTop ( tile2 );
                 
                 this.tweens.add ({
                     targets : tile1,

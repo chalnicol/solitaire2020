@@ -44,7 +44,7 @@ window.onload = function () {
 
     function enterGame () {
 
-        var maxW = 414;
+        var maxW = 720;
 
         var container = document.getElementById('game_container');
 
@@ -90,25 +90,21 @@ window.onload = function () {
                 disableWebAudio: false
             },
             parent:'game_div',
-            scene: [ SceneA, SceneB ]
+            scene: [ Intro, SceneB ]
 
         };
 
         game = new Phaser.Game(config);
 
-        //socket = io();
-
-        //socket.emit ('initUser', username.value );
-
     }
 
-    var SceneA = new Phaser.Class({
+    var Intro = new Phaser.Class({
 
         Extends: Phaser.Scene,
 
         initialize:
 
-        function SceneA ()
+        function Intro ()
         {
             Phaser.Scene.call(this, { key: 'sceneA' });
         },
@@ -122,11 +118,11 @@ window.onload = function () {
                 'client/assets/sfx/sfx.mp3'
             ]);
             
-            
-            //this.load.audio ('bgsound', ['client/assets/sfx/bgsound.ogg', 'assets/sfx/bgsound.mp3'] );
+            this.load.audio ('bgsound', ['client/assets/sfx/bgsound.ogg', 'client/assets/sfx/bgsound.mp3'] );
 
-            //this.load.audio ('bgsound2', ['client/assets/sfx/bubble_puzzler.ogg', 'assets/sfx/bubble_puzzler.mp3'] );
+            this.load.audio ('bgsound2', ['client/assets/sfx/bgsound2.ogg', 'client/assets/sfx/bgsound2.mp3'] );
             
+
             this.load.spritesheet('thumbs', 'client/assets/images/spritesheet.png', { frameWidth: 70, frameHeight: 70 });
 
             this.load.spritesheet('tiles', 'client/assets/images/tiles.png', { frameWidth: 158, frameHeight: 158 });
@@ -158,12 +154,10 @@ window.onload = function () {
 
 
             var rctW = _gW * 0.5, 
-            rctH = _gH * 0.025,
-            rctX = (_gW - rctW)/2,
-            rctY = _gH/2;
+                rctH = _gH * 0.025,
+                rctX = (_gW - rctW)/2,
+                rctY = _gH/2;
         
-           
-
             var txtConfig = {
                 color : "#333",
                 fontSize : _gH * 0.02,
@@ -172,6 +166,8 @@ window.onload = function () {
             this.loadtxt = this.add.text ( _gW/2, _gH * 0.48, 'Loading Files..', txtConfig ) .setOrigin(0.5);
             
             this.loadrect = this.add.rectangle ( rctX, rctY, rctW * 0.02, rctH, 0x9e9e9e, 1 ).setOrigin(0);
+
+            var smtxt = this.add.text (_gW/2, _gH*0.9, '@chalnicol', { color:'gray', fontSize: 18 *_gW/720, fontFamily:'Oswald'} ).setOrigin(0.5);
 
             //...
             this.load.on('progress', function (value) {
@@ -186,24 +182,29 @@ window.onload = function () {
 
             this.load.on('complete', function () {
                 this.loadtxt.destroy();
+                this.loadrect.destroy();
             }, this );
+
 
         },
         create: function () {
             
-            this.loadtxt.destroy();
-            this.loadrect.destroy();
+            //this.loadtxt.destroy();
+            //this.loadrect.destroy();
+            this.initMenuInterface ();
 
             this.initMenuSound ();
 
-            this.initMenuInterface ();
+            
            
         },
         initMenuSound : function () {
 
-            this.music = this.sound.addAudioSprite('sfx');
 
-            //this.bgmusic = this.sound.add('bgsound').setVolume(0.2).setLoop(true).play();
+            this.bgmusic = this.sound.add('bgsound').setVolume(0.2).setLoop(true);
+            this.bgmusic.play();
+
+            this.music = this.sound.addAudioSprite('sfx');
 
         },
         initMenuInterface : function () {
@@ -257,16 +258,17 @@ window.onload = function () {
             
             });
 
-            this.music.play ('move');
+            //this.music.play ('move');
 
         },
         initGame : function () {
             
+            
+            this.bgmusic.stop();
+
             var _this = this;
 
             setTimeout(() => {
-
-                //_this.bgmusic.stop();
 
                 _this.scene.start( 'sceneB' );
 
@@ -315,7 +317,8 @@ window.onload = function () {
 
             this.music = this.sound.addAudioSprite('sfx');
 
-            //this.bgmusic = this.sound.add('bgsound').setVolume(0.2).setLoop(true).play();
+            this.bgmusic = this.sound.add('bgsound2').setVolume(0.2).setLoop(true);
+            this.bgmusic.play();
 
         },
         initGameInterface : function () {
@@ -968,7 +971,8 @@ window.onload = function () {
         },
         leaveGame : function () {
 
-            //this.bgmusic.stop ();
+            this.bgmusic.stop ();
+
             this.scene.start ('sceneA');
 
         }

@@ -330,18 +330,18 @@ window.onload = function () {
             var panel = this.add.image (_gW/2, _gH/2, 'panel').setScale (_gW/720);
 
             var configlvlTxt = {
-                color : '#dedede',
+                color : '#fff',
                 fontFamily : 'Coda',
                 fontSize : Math.floor ( 35 * _gH/1280)
             }
 
             this.lvlText = this.add.text ( _gW * 0.12, _gH * 0.103 , 'Level : 1', configlvlTxt ).setOrigin (0,0.5);
             
-            this.lvlText.setShadow  ( 0, 2, '#3a3a3a', 3, false, true );
+            this.lvlText.setShadow  ( 0, 2, '#000', 3, false, true );
 
             this.movText = this.add.text ( _gW * 0.88, _gH * 0.103 , 'Moves : 0', configlvlTxt ).setOrigin (1,0.5);
 
-            this.movText.setShadow  ( 0, 2, '#3a3a3a', 3, false, true );
+            this.movText.setShadow  ( 0, 2, '#000', 3, false, true );
 
            
             var best_btn = this.add.image (_gW/2, _gH * 0.9, 'best_btn').setScale (_gW/720).setInteractive();
@@ -358,6 +358,9 @@ window.onload = function () {
                 _this.showBestScores();
             });
 
+            var txt = this.add.text ( _gW/2, _gH * 0.9, 'Show Best Moves', {fontSize:30*_gW/720, fontFamily:'Coda', color:'#fff'}).setOrigin(0.5);
+            
+            txt.setShadow  ( 0, 2, '#000', 3, false, true );
 
             var homebtn = this.add.image (_gW * 0.05, _gH * 0.02, 'home_btn').setScale (_gW/720).setOrigin(0).setInteractive();
 

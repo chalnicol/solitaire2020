@@ -410,7 +410,8 @@ window.onload = function () {
         },
         initGame : function () {
 
-
+            this.openTiles = [];
+            
             var r = this.gmData[this.gmLvl - 1].r,
                 c = this.gmData[this.gmLvl - 1].c;
 

@@ -289,7 +289,6 @@ window.onload = function () {
             Phaser.Scene.call(this, { key: 'sceneB' });
         },
 
-          
         preload: function ()
         {
             //..
@@ -476,6 +475,7 @@ window.onload = function () {
                         id : counter,
                         content : frames [counter ] + 1,
                         gridPost : counter,
+                        isOpen : false,
                         isRevealed : false,
                     };
 
@@ -485,7 +485,10 @@ window.onload = function () {
                     
                     var img = this.add.image (0,0, 'thumbs', 0 ).setScale (tileW/70 * 0.75).setVisible(true);
 
-                    miniCont.add ([tile, img]);
+                    var txt = this.add.text ( tileW * 0.35, -tileW * 0.4, counter + 1, {fontSize:tileW*0.2, fontFamily:'Coda', color:'#fff' }  ).setOrigin (1, 0);
+                    txt.setShadow (0,2,'#f00', 2, false, true);
+
+                    miniCont.add ([tile, img, txt]);
 
                     miniCont.on('pointerover', function () {
                         this.getAt (0).setFrame (1);
@@ -497,12 +500,15 @@ window.onload = function () {
 
                         if ( _this.halt ) return;
 
-                        
                         this.removeInteractive();
 
                         this.getAt (0).setFrame (2);
 
-                        this.getAt (1).setFrame ( this.getData('content'))
+                        this.getAt (1).setFrame ( this.getData('content'));
+
+                        this.getAt (2).setVisible (false);
+
+                        this.setData ('isOpen', true );
 
                         _this.playSound ('pick');
 
@@ -562,7 +568,7 @@ window.onload = function () {
 
                 tile1.setData('isRevealed', true );
                 tile2.setData('isRevealed', true );
-                
+
                 this.tweens.add ({
                     targets : [ tile1, tile2 ],
                     scaleX : 1.1,
@@ -598,9 +604,6 @@ window.onload = function () {
 
             }else {
 
-
-               
-
                 //console.log ('err');
                 setTimeout(() => {
 
@@ -614,11 +617,17 @@ window.onload = function () {
 
                     for ( var i = 0; i < _this.openTiles.length; i++ ) {
                         
-                        _this.tiles [ _this.openTiles[i].id ].getAt(0).setFrame (0);
-    
-                        _this.tiles [ _this.openTiles[i].id ].getAt(1).setFrame (0);
+                        var tilee =  _this.tiles [ _this.openTiles[i].id ];
 
-                        _this.tiles [ _this.openTiles[i].id ].setInteractive();
+                        tilee.getAt(0).setFrame (0);
+    
+                        tilee.getAt(1).setFrame (0);
+
+                        tilee.getAt(2).setVisible (true);
+
+                        tilee.setData('isOpen', false );
+
+                        tilee.setInteractive();
                     }               
 
                     _this.halt = false;
@@ -637,7 +646,7 @@ window.onload = function () {
 
                 var tile1 = this.tiles [ this.openTiles[0].id ],
                     tile2 = this.tiles [ this.openTiles[1].id ];
-                
+
                 var grid1 = tile1.getData('gridPost');
                 var grid2 = tile2.getData('gridPost');
                 
@@ -663,53 +672,62 @@ window.onload = function () {
                 tile2.setData ('gridPost', grid1);
                 
             }
-
             else if ( this.gmLvl == 2)  {
 
                 //get tiles and push to temp arr..
                 var tempArr = [];
+
                 for ( var i in this.tiles ) {
-                    if ( !this.tiles [i].getData ('isRevealed') ) {
-                        tempArr.push ( this.tiles[i].getData('gridPost') );
+
+                    var tiles = this.tiles [i];
+
+                    if ( !tiles.getData ('isRevealed') && !tiles.getData('isOpen') ) {
+                        tempArr.push ( tiles.getData('id') );
                     }
                 }
 
                 //randomize..
-                var gridArr = [];
-
-                while ( tempArr.length > 0 ) {
+                while ( tempArr.length > 2 ) {
 
                     var randomIndex = Math.floor ( Math.random() * tempArr.length );
-
-                    gridArr.push ( tempArr[randomIndex] );
 
                     tempArr.splice ( randomIndex, 1);
                 }
 
                 //and set..
-                var counter = 0;
-                for ( var i in this.tiles ) {
+                for ( var i in this.openTiles ) {
 
-                    if ( !this.tiles [i].getData ('isRevealed') ) {
+                    var tilea = this.tiles [ this.openTiles[i].id ]
+                        tileb = this.tiles [ tempArr [i] ];
 
-                        this.tweens.add ({
-                            targets : this.tiles [i],
-                            x : this.grid [gridArr [counter]].x,
-                            y : this.grid [gridArr [counter]].y,
-                            duration : 500,
-                            ease : 'Power3' 
-                        });
-    
-                        this.tiles [i].setData ('gridPost', gridArr[counter]);
+                    var gridPosa = tilea.getData('gridPost'),
+                        gridPosb = tileb.getData('gridPost');
 
-                        counter++;
+                    this.tilesContainer.bringToTop ( tilea );
+                    this.tilesContainer.bringToTop ( tileb );
 
-                    }
+                    this.tweens.add ({
+                        targets : tilea,
+                        x : this.grid [gridPosb].x,
+                        y : this.grid [gridPosb].y,
+                        duration : 500,
+                        ease : 'Power3' 
+                    });
+                    this.tweens.add ({
+                        targets : tileb,
+                        x : this.grid [gridPosa].x,
+                        y : this.grid [gridPosa].y,
+                        duration : 500,
+                        ease : 'Power3' 
+                    });
 
+
+                    tilea.setData('gridPost', gridPosb);
+                    tileb.setData('gridPost', gridPosa);
+                    
                 }
 
             }
-
             else {
 
                 var tempArr = [];

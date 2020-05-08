@@ -7,12 +7,12 @@
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	
 
-	<meta property="og:title" content="Memory Game" />
+	<meta property="og:title" content="Solitaire" />
 	<meta property="og:type" content="Mobile and PC Games" />
 	<meta property="og:image" content="client/assets/images/icons/logo.png" />
-	<meta property="og:description" content="A memory game with a twist. Credit also to the game creator and to the owner of images & sounds." />
+	<meta property="og:description" content="Credit also to the game creator and to the owner of images & sounds." />
 		
-	<title>Memory Game</title>
+	<title>Solitaire</title>
 
 	<link rel="shortcut icon" href="client/assets/images/icons/sv_icon.ico">
 	<link rel="apple-touch-icon" href="client/assets/images/icons/sv_icon.png">
@@ -74,30 +74,26 @@
 
 </head>
 <body>
+	<div id="game_container">
 
+		<div id="game_login">
 
+			<form id="myForm">
 
-		<div id="game_container">
+				<label for=""><strong>Welcome to Solitaire</strong></label>
 
-			<div id="game_login">
-
-				<form id="myForm">
-
-					<label for=""><strong>Welcome to Memory Game</strong></label>
-
-					<div class="mt-2">
-						<input type="submit" value="Enter" class="btn btn-secondary btn-block" id="btnEnter">
-					</div>
+				<div class="mt-2">
+					<input type="submit" value="Enter" class="btn btn-secondary btn-block" id="btnEnter">
+				</div>
+			
+				<div id="messageDiv" class="text-danger"></div>
 				
-					<div id="messageDiv" class="text-danger"></div>
-					
-				</form>
+			</form>
 
-			</div>
-
-			<div id="game_div" style="display: none"></div>
-		
 		</div>
+
+		<div id="game_div" style="display: none"></div>
 	
+	</div>
 </body>
 </html>

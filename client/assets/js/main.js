@@ -85,7 +85,7 @@ window.onload = function () {
                 disableWebAudio: false
             },
             parent:'game_div',
-            scene: [ Intro ]
+            scene: [ SceneA, SceneB ]
 
         };
 
@@ -97,13 +97,14 @@ window.onload = function () {
 
     }
 
-    var Intro = new Phaser.Class({
+
+    var SceneA = new Phaser.Class({
 
         Extends: Phaser.Scene,
 
         initialize:
 
-        function Intro ()
+        function SceneA ()
         {
             Phaser.Scene.call(this, { key: 'sceneA' });
         },
@@ -121,11 +122,17 @@ window.onload = function () {
 
             this.load.audio ('bgsound', ['client/assets/sfx/bgsound2.ogg', 'client/assets/sfx/bgsound2.mp3'] );
             
+            this.load.image('bg', 'client/assets/images/bg.png');
+
+            this.load.image('title', 'client/assets/images/title.png');
+
             this.load.spritesheet('kinds', 'client/assets/images/kinds.png', { frameWidth: 100, frameHeight: 100 });
 
             this.load.spritesheet('kinds_sm', 'client/assets/images/kinds_sm.png', { frameWidth: 25, frameHeight: 25 });
 
             this.load.spritesheet('card', 'client/assets/images/card.png', { frameWidth: 102, frameHeight: 137 });
+
+            this.load.spritesheet('menu_btn', 'client/assets/images/menu_btn.png', { frameWidth: 255, frameHeight: 255 });
 
             this.load.spritesheet('people', 'client/assets/images/people.png', { frameWidth: 100, frameHeight: 135 });
 
@@ -164,15 +171,117 @@ window.onload = function () {
             }, this );
 
         },
-        create: function () {
+        create :  function () {
+
+            this.initMenuSound ();
+            this.initMenuInterface ();
+
+        },
+        initMenuSound : function () {
+
+
+            this.bgmusic = this.sound.add('bgsound2').setVolume(0.2).setLoop(true);
+            this.bgmusic.play();
+
+            this.music = this.sound.addAudioSprite('sfx');
+
+        },
+        initMenuInterface : function () {
+
+            var bg = this.add.image ( _gW/2, _gH/2,'bg' ).setScale(_scale );
+
+
+            var prot = Math.PI/180 * -45;
+
+            var title = this.add.image ( _gW/2, _gH * 1.5,'title' ).setScale(_scale ).setRotation (prot);
+
+            this.tweens.add ({
+                targets : title,
+                y : _gH/2,
+                rotation : 0,
+                duration : 300,
+                ease : 'Power2'
+            });
+            this.music.play ('move')
+
+            var bz = 255 * _scale,
+                bs = bz * 0.2,
+                bx = (_gW - ( (2 * bz) + bs ))/2 + bz/2,
+                by = _gH *0.55;
+
+            for ( var i = 0; i < 2; i++ ) {
+
+                var img = this.add.image ( bx + i * ( bz + bs ), by + _gH, 'menu_btn', i ).setScale (_scale ).setData('id', i ).setInteractive ().setRotation (prot);
+
+                img.on ('pointerover', function () {
+                    this.setTint (0xcecece);
+                });
+                img.on ('pointerout', function () {
+                    this.clearTint ();
+                });
+                img.on ('pointerup', function () {
+                    this.clearTint ();
+                });
+                img.on ('pointerdown', function () {
+                    
+                    var mode = this.getData('id') == 0 ? 'easy' : 'hard';
+
+                    this.scene.music.play('clicka');
+                    this.scene.startGame (mode)
+                });
+
+                this.tweens.add ({
+                    targets : img,
+                    y : by,
+                    rotation : 0,
+                    duration : 300,
+                    ease : 'Power2',
+                    delay : (i * 300) + 300
+                });
+
+                this.time.delayedCall ( (i * 300) + 300, function () {
+                    this.music.play ('move');
+                }, [], this );
+                
+            }
+
+            
+          
+           
+        },
+        startGame : function ( data ) {
+
+            this.bgmusic.stop();
+            this.scene.start ('sceneB', data );
+        }
+        
+    });
+
+    var SceneB = new Phaser.Class({
+
+        Extends: Phaser.Scene,
+
+        initialize:
+
+        function SceneB ()
+        {
+            Phaser.Scene.call(this, { key: 'sceneB' });
+        },
+
+        preload : function () {
+
+        },
+        create: function ( data ) {
 
             this.card = {
                 w : 100 * _scale,  h : 135 * _scale,
             };
 
-            this.mode = 'easy';
+            console.log ( data );
 
-            this.initMenuInterface ();
+            this.mode = data;
+
+            this.initGraphics ();
 
             this.initMenuSound ();
 
@@ -195,12 +304,12 @@ window.onload = function () {
             this.music = this.sound.addAudioSprite('sfx');
 
         },
-        initMenuInterface : function () {
+        initGraphics : function () {
 
             var _this = this;
 
-            var bg = this.add.rectangle (0, 0, _gW, _gH, 0x009933, 1 ).setOrigin(0);
-
+            //var bg = this.add.rectangle (0, 0, _gW, _gH, 0x009933, 1 ).setOrigin(0);
+            var bg = this.add.image ( _gW/2, _gH/2,'bg' ).setScale(_scale );
            
         },
         initCardsHolder : function () {
@@ -217,7 +326,7 @@ window.onload = function () {
 
             var initialBox = this.add.container ( padding + cardW/2, padding + cardH/2 ).setSize( cardW, cardH).setInteractive ().setName ('initBox');
         
-            var recta = this.add.rectangle ( 0, 0, cardW, cardH, 0xffffff, 0.5 );
+            var recta = this.add.rectangle ( 0, 0, cardW, cardH, 0xffffff, 0.6 );
 
             var circlea = this.add.circle ( 0, 0, cardW * 0.3 ).setStrokeStyle ( strk, 0xff0000 );
 
@@ -244,7 +353,7 @@ window.onload = function () {
 
                 var homeContainer = this.add.container ( xs, ys ).setData( { 'resided' : false, 'kind' : -1, topVal : -1 } ).setName ('home' + i );
                 
-                var rectb = this.add.rectangle ( 0, 0, cardW, cardH, 0xffffff, 0.5 )
+                var rectb = this.add.rectangle ( 0, 0, cardW, cardH, 0xffffff, 0.6 )
 
                 var circleb = this.add.circle ( 0, 0, cardW * 0.3 ).setStrokeStyle ( strk, 0x33ffff );
 
@@ -268,7 +377,7 @@ window.onload = function () {
 
                 var fieldContainer = this.add.container ( xp, yp ).setName ('field' + i ).setData('col', i );
 
-                var rectc = this.add.rectangle ( 0, 0, cardW, cardH, 0xffffff, 0.5 );
+                var rectc = this.add.rectangle ( 0, 0, cardW, cardH, 0xffffff, 0.6 );
 
                 var circlec = this.add.circle ( 0, 0, cardW * 0.3 ).setStrokeStyle ( strk, 0x6b6b6b);
 
@@ -316,18 +425,25 @@ window.onload = function () {
                 });
                 rct.on ('pointerdown', function () {
                     
-                    this.scene.playSound ('clicka');
+                    this.getAt (0).setFillStyle ( 0xff9999, 1 );
 
-                    if ( this.getData('id') == 'restart') {
-                        
-                        if ( this.scene.isPrompted ) return;
-                        
-                        this.scene.restartPrompt ();
+                    if ( this.scene.isPrompted ) {
 
+                        this.scene.playSound ('error')
                     }else {
+                        this.scene.playSound ('clicka');
 
-                        this.scene.leaveGame ();
+                        if ( this.getData('id') == 'restart') {
+                            
+                            this.scene.restartPrompt ();
+
+                        }else {
+
+                            this.scene.leavePrompt ();
+                        }
                     }
+
+                    
                    
                 });
 
@@ -866,7 +982,7 @@ window.onload = function () {
 
             this.promptContainer = this.add.container ( 0, 0 );
 
-            var rect = this.add.rectangle ( _gW/2, _gH/2, 450*_scale, 200*_scale, 0x0a0a0a, 0.96 );
+            var rect = this.add.rectangle ( _gW/2, _gH/2, 450*_scale, 200*_scale, 0x2e2e2e, 0.9 );
 
             var txtr = this.add.text ( _gW/2, _gH * 0.44, 'Are you sure you want to restart?', { color:'#f4f4f4', fontSize:26*_scale, fontFamily:'Oswald'}).setOrigin(0.5);
 
@@ -913,6 +1029,59 @@ window.onload = function () {
 
             //..
         },
+        leavePrompt : function () {
+
+            this.isPrompted = true;
+
+            this.promptContainer = this.add.container ( 0, 0 );
+
+            var rect = this.add.rectangle ( _gW/2, _gH/2, 450*_scale, 200*_scale, 0x2e2e2e, 0.9 );
+
+            var txtr = this.add.text ( _gW/2, _gH * 0.44, 'Are you sure you want to leave?', { color:'#f4f4f4', fontSize:26*_scale, fontFamily:'Oswald'}).setOrigin(0.5);
+
+            this.promptContainer.add ( [rect, txtr] );
+
+            var bw = 130*_scale, bh = 45 * _scale, bs= bw * 0.15;
+
+            var fx = (_gW - (2 * ( bw + bs ) - bs))/2 + bw/2,
+                fy = _gH *0.56;
+
+            for ( var i = 0; i < 2; i++ ) {
+
+                var miniContainer = this.add.container ( fx + i * ( bw+bs), fy ).setSize(bw, bh).setData('id', i).setInteractive ();
+
+                var rectbtn = this.add.rectangle ( 0, 0, bw, bh, 0x9a9a9a, 1 );
+
+                var txtbtn = this.add.text (0, 0, i == 0? 'Yes' : 'No', { color:'#333', fontSize:bh*0.5, fontFamily:'Oswald'}).setOrigin (0.5);
+
+                miniContainer.add ( [rectbtn, txtbtn]);
+
+                miniContainer.on ('pointerover', function () {
+                    this.getAt (0).setFillStyle ( 0xa3a3a3, 1 );
+                });
+                miniContainer.on ('pointerout', function () {
+                    this.getAt (0).setFillStyle ( 0xcecece, 1 );
+                });
+                miniContainer.on ('pointerup', function () {
+                    this.getAt (0).setFillStyle ( 0xcecece, 1 );
+                });
+                miniContainer.on ('pointerdown', function () {
+                    
+                    this.scene.playSound ('clicka');
+
+                    if ( this.getData ('id') == 0 ) {
+                        this.scene.leaveGame ();
+                    }else {
+                        this.scene.removePrompt();
+                    }
+                });
+
+                this.promptContainer.add ( miniContainer );
+
+            }
+
+            //..
+        },
         removePrompt : function () {
 
             if ( !this.isPrompted ) return;
@@ -943,6 +1112,9 @@ window.onload = function () {
         leaveGame : function () {
 
             console.log ('todo exit');
+            this.bgmusic.stop ();
+            this.scene.start ('sceneA');
+
         },
         playSound : function ( snd, vol=0.5) {
             this.music.play ( snd, { volume : vol });

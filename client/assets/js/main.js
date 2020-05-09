@@ -123,6 +123,8 @@ window.onload = function () {
             
             this.load.spritesheet('kinds', 'client/assets/images/kinds.png', { frameWidth: 100, frameHeight: 100 });
 
+            this.load.spritesheet('kinds_sm', 'client/assets/images/kinds_sm.png', { frameWidth: 25, frameHeight: 25 });
+
             this.load.spritesheet('card', 'client/assets/images/card.png', { frameWidth: 102, frameHeight: 137 });
 
           
@@ -601,7 +603,7 @@ window.onload = function () {
                     ease : "Quad.easeIn"
                 });
 
-                card.setPost ('home');
+                card.setPost ('home', homePost )
 
                 this.playSound ('clickb');
                     
@@ -708,6 +710,13 @@ window.onload = function () {
                 }
 
 
+            }else {
+
+                var home = this.mainContainer.getByName ('home' + card.col ) ;
+
+                home.setData ('topVal', card.val - 1 );
+
+
             }
             
         },
@@ -790,25 +799,28 @@ window.onload = function () {
         },
         getHomePosition : function ( data ) {
 
-            for ( var i = 0; i < 4; i++ ) {
+            if ( data.currentPost != 'home') {
 
-                var home = this.mainContainer.getByName ('home' + i);
+                for ( var i = 0; i < 4; i++ ) {
 
-                if ( data.val == 0 && data.currentPost != 'home' && !home.getData('resided') ) return i;
-
-                if ( data.val == 1 && home.getData('topVal') == 0  && data.knd == home.getData ('knd') ) return i;
-
-                if ( data.val >= 2 ) {
-
-                    var fpos = this.getFieldPosition ( data );
-
-                    if ( fpos == null && (data.val - 1) == home.getData('topVal') && data.knd == home.getData ('knd')  ) return i;
-
+                    var home = this.mainContainer.getByName ('home' + i);
+    
+                    if ( data.val == 0 && data.currentPost != 'home' && !home.getData('resided') ) return i;
+    
+                    if ((data.val - 1) == home.getData('topVal') && data.knd == home.getData ('knd')  ) return i;
+    
+                    /* if ( data.val >= 2 ) {
+    
+                        var fpos = this.getFieldPosition ( data );
+    
+                        if ( fpos == null && (data.val - 1) == home.getData('topVal') && data.knd == home.getData ('knd')  ) return i;
+    
+                    } */
+                    
                 }
-                
             }
-
             return null;
+
         },
         generateRandomOrder : function () {
 
@@ -960,18 +972,17 @@ window.onload = function () {
                 color : this.clr == 0 ? 'black' : 'red' 
             };
 
-            var str = '♣♠♥♦';
-
             var txt = scene.add.text ( -width *0.3, -height*0.32, strVal, txtConfig ).setOrigin (0.5).setVisible (isFlipped);
 
             var kind_sm = scene.add.sprite ( -width *0.3 , -height*0.07, 'kinds', knd ).setScale ( width*0.3/100 ).setVisible (isFlipped);;
 
             var kind_lg = scene.add.sprite ( width* 0.13, height*0.2, 'kinds', knd ).setScale ( width*0.85/100 ).setVisible (isFlipped);
 
-            var txte = scene.add.text ( width *0.42, -height*0.48, strVal, txtConfig ).setOrigin (1, 0).setFontSize ( height * 0.12 ).setVisible (isFlipped);
+            var txte = scene.add.text ( width *0.3, -height*0.4, strVal, txtConfig ).setOrigin (1, 0.5).setFontSize ( height * 0.12 ).setVisible (isFlipped);
 
+            var kind_xs = scene.add.image (width *0.45, -height*0.4 , 'kinds_sm', knd ).setOrigin (1, 0.5).setScale (width*0.18/25).setVisible (isFlipped);
 
-            this.add ( [ cardbg, txt, kind_sm, kind_lg, txte] );
+            this.add ( [ cardbg, txt, kind_sm, kind_lg, txte, kind_xs ] );
 
             scene.children.add ( this );
 
@@ -979,16 +990,15 @@ window.onload = function () {
 
         flip: function ( state = 'up' ) {
 
-            this.getAt ( 0 ).setFrame ( (state == 'up') ? 0 : 1 );
+            var isUp = state == 'up';
+
+            this.getAt ( 0 ).setFrame ( isUp ? 0 : 1 );
             
-            this.getAt ( 1 ).setVisible ( state == 'up' );
 
-            this.getAt ( 2 ).setVisible ( state == 'up' );
-
-            this.getAt ( 3 ).setVisible ( state == 'up' );
-
-            this.getAt ( 4 ).setVisible ( state == 'up' );
-
+            for ( var i = 0; i < 5; i++) {
+                this.getAt ( i + 1 ).setVisible ( isUp );
+            }   
+            
             return this;
 
         },
@@ -1013,6 +1023,7 @@ window.onload = function () {
             
             return this;
         },
+   
 
         
     });

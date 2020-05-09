@@ -191,9 +191,7 @@ window.onload = function () {
             var bg = this.add.image ( _gW/2, _gH/2,'bg' ).setScale(_scale );
 
 
-            var prot = Math.PI/180 * -45;
-
-            var title = this.add.image ( _gW/2, _gH * 1.5,'title' ).setScale(_scale ).setRotation (prot);
+            var title = this.add.image ( _gW/2, -_gH/2,'title' ).setScale(_scale );
 
             this.tweens.add ({
                 targets : title,
@@ -211,7 +209,9 @@ window.onload = function () {
 
             for ( var i = 0; i < 2; i++ ) {
 
-                var img = this.add.image ( bx + i * ( bz + bs ), by + _gH, 'menu_btn', i ).setScale (_scale ).setData('id', i ).setInteractive ().setRotation (prot);
+                var xs = bx + i * ( bz + bs );
+
+                var img = this.add.image ( xs + (950 * _scale), by, 'menu_btn', i ).setScale (_scale ).setData('id', i ).setInteractive();
 
                 img.on ('pointerover', function () {
                     this.setTint (0xcecece);
@@ -232,19 +232,18 @@ window.onload = function () {
 
                 this.tweens.add ({
                     targets : img,
-                    y : by,
-                    rotation : 0,
-                    duration : 300,
-                    ease : 'Power2',
+                    x : xs,
+                    duration : 500,
+                    easeParams : [ 1, 0.9 ],
+                    ease : 'Elastic',
                     delay : (i * 300) + 300
                 });
-
                 this.time.delayedCall ( (i * 300) + 300, function () {
                     this.music.play ('move');
                 }, [], this );
-                
             }
 
+            
             
           
            
@@ -306,7 +305,7 @@ window.onload = function () {
         },
         initGraphics : function () {
 
-            var _this = this;
+            this.isPrompted = false;
 
             //var bg = this.add.rectangle (0, 0, _gW, _gH, 0x009933, 1 ).setOrigin(0);
             var bg = this.add.image ( _gW/2, _gH/2,'bg' ).setScale(_scale );
@@ -430,7 +429,9 @@ window.onload = function () {
                     if ( this.scene.isPrompted ) {
 
                         this.scene.playSound ('error')
+
                     }else {
+
                         this.scene.playSound ('clicka');
 
                         if ( this.getData('id') == 'restart') {
@@ -441,6 +442,7 @@ window.onload = function () {
 
                             this.scene.leavePrompt ();
                         }
+
                     }
 
                     
@@ -982,7 +984,7 @@ window.onload = function () {
 
             this.promptContainer = this.add.container ( 0, 0 );
 
-            var rect = this.add.rectangle ( _gW/2, _gH/2, 450*_scale, 200*_scale, 0x2e2e2e, 0.9 );
+            var rect = this.add.rectangle ( _gW/2, _gH/2, 450*_scale, 200*_scale, 0x2e2e2e, 0.9 ).setInteractive();
 
             var txtr = this.add.text ( _gW/2, _gH * 0.44, 'Are you sure you want to restart?', { color:'#f4f4f4', fontSize:26*_scale, fontFamily:'Oswald'}).setOrigin(0.5);
 
@@ -1035,7 +1037,7 @@ window.onload = function () {
 
             this.promptContainer = this.add.container ( 0, 0 );
 
-            var rect = this.add.rectangle ( _gW/2, _gH/2, 450*_scale, 200*_scale, 0x2e2e2e, 0.9 );
+            var rect = this.add.rectangle ( _gW/2, _gH/2, 450*_scale, 200*_scale, 0x2e2e2e, 0.9 ).setInteractive();;
 
             var txtr = this.add.text ( _gW/2, _gH * 0.44, 'Are you sure you want to leave?', { color:'#f4f4f4', fontSize:26*_scale, fontFamily:'Oswald'}).setOrigin(0.5);
 

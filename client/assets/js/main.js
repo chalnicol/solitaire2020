@@ -1014,7 +1014,7 @@ window.onload = function () {
             return this;
 
         },
-        setPost : function ( cp, col=9, row=9 ) {
+        setPost : function ( cp, col=-1, row=-1 ) {
 
             this.currentPost = cp; 
 

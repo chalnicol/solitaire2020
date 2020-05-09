@@ -127,6 +127,8 @@ window.onload = function () {
 
             this.load.spritesheet('card', 'client/assets/images/card.png', { frameWidth: 102, frameHeight: 137 });
 
+            this.load.spritesheet('people', 'client/assets/images/people.png', { frameWidth: 100, frameHeight: 135 });
+
           
             var rctW = _gW * 0.25, 
                 rctH = 20 * _scale,
@@ -476,11 +478,12 @@ window.onload = function () {
                     
                     this.topCardCount += 1;
 
-                    if ( this.cardsOutCount < 3 ) this.cardsOutCount += 1;
+                    if ( this.cardsOutCount < 4 ) this.cardsOutCount += 1;
 
-                    if ( this.cardsOutCount >= 3 ) {
+                    if ( this.cardsOutCount >= 4 ) {
                         
                         //console.log ( 'move' );
+                        this.cardsOutCount = 3;
 
                         var len = this.initialCards.length;
 
@@ -567,8 +570,6 @@ window.onload = function () {
 
                 if ( this.mode == 'easy' ) this.cardsOutCount = 0;
 
-
-
                 this.time.delayedCall ( 100 , function () {
                     this.mainContainer.getByName ('initBox').setInteractive ();
                 }, [], this);
@@ -603,7 +604,7 @@ window.onload = function () {
                     ease : "Quad.easeIn"
                 });
 
-                card.setPost ('home', homePost )
+                card.setHome ( homePost );
 
                 this.playSound ('clickb');
                     
@@ -682,6 +683,7 @@ window.onload = function () {
         },
         resultAction : function ( card ) {
 
+
             if ( card.currentPost == '' ) {
 
                 var index = this.getCurrentIndex ( card.id );
@@ -694,12 +696,22 @@ window.onload = function () {
                 
                 this.topCardCount += -1;
                 
-                if ( this.mode == 'easy' && this.cardsOutCount > 0 ) this.cardsOutCount += -1;
+                if ( this.mode == 'easy' ) {
+
+                    if ( this.topCardCount <= 0 ) {
+
+                        this.cardsOutCount = 0;
+
+                    }else {
+
+                        if ( this.cardsOutCount > 1 )  this.cardsOutCount += -1;
+                    }
+
+                }
 
 
             }else if ( card.currentPost == 'field' ) {
 
-               
                 this.fieldedCards [ card.col ].pop ();
 
                 if ( this.fieldedCards [card.col].length > 0 ) {
@@ -712,7 +724,7 @@ window.onload = function () {
 
             }else {
 
-                var home = this.mainContainer.getByName ('home' + card.col ) ;
+                var home = this.mainContainer.getByName ('home' + card.home ) ;
 
                 home.setData ('topVal', card.val - 1 );
 
@@ -751,6 +763,7 @@ window.onload = function () {
                 col = data.col;
 
             if ( val !== 0 ) {
+
                 if ( val == 12 ) {
 
                     for ( var i in this.fieldedCards ) {
@@ -799,7 +812,10 @@ window.onload = function () {
         },
         getHomePosition : function ( data ) {
 
-            if ( data.currentPost != 'home') {
+
+            var isBottom = this.getCardIsAtBottom ( data );
+
+            if ( !isBottom && data.currentPost != 'home') {
 
                 for ( var i = 0; i < 4; i++ ) {
 
@@ -963,6 +979,8 @@ window.onload = function () {
             this.isEnabled = false;
             this.row = -1;
             this.col = -1;
+            this.home = 0;
+
 
             var cardbg = scene.add.image ( 0, 0, 'card', isFlipped ? 0 : 1 ).setScale (_scale );
 
@@ -972,17 +990,28 @@ window.onload = function () {
                 color : this.clr == 0 ? 'black' : 'red' 
             };
 
+
+            var frame = 0;
+
+            if ( val >= 10 ) {
+                frame = this.clr == 0 ? val - 9 : (val - 9) + 4; 
+            }
+
+           
+
             var txt = scene.add.text ( -width *0.3, -height*0.32, strVal, txtConfig ).setOrigin (0.5).setVisible (isFlipped);
 
-            var kind_sm = scene.add.sprite ( -width *0.3 , -height*0.07, 'kinds', knd ).setScale ( width*0.3/100 ).setVisible (isFlipped);;
+            var kind_sm = scene.add.sprite ( -width *0.3 , -height*0.07, 'kinds', knd ).setScale ( width*0.3/100 ).setVisible (isFlipped);
 
-            var kind_lg = scene.add.sprite ( width* 0.13, height*0.2, 'kinds', knd ).setScale ( width*0.85/100 ).setVisible (isFlipped);
+            var kind_lg = scene.add.sprite ( width* 0.13, height*0.2, 'kinds', knd ).setScale ( width*0.85/100 ).setVisible (isFlipped).setAlpha ( val > 9 ? 0.3 : 1 );
 
             var txte = scene.add.text ( width *0.3, -height*0.4, strVal, txtConfig ).setOrigin (1, 0.5).setFontSize ( height * 0.12 ).setVisible (isFlipped);
 
             var kind_xs = scene.add.image (width *0.45, -height*0.4 , 'kinds_sm', knd ).setOrigin (1, 0.5).setScale (width*0.18/25).setVisible (isFlipped);
 
-            this.add ( [ cardbg, txt, kind_sm, kind_lg, txte, kind_xs ] );
+            var img  = scene.add.sprite ( 0,0, 'people', frame ).setScale ( _scale ).setVisible (isFlipped);
+
+            this.add ( [ cardbg, txt, kind_sm, kind_lg, txte, kind_xs, img ] );
 
             scene.children.add ( this );
 
@@ -994,8 +1023,7 @@ window.onload = function () {
 
             this.getAt ( 0 ).setFrame ( isUp ? 0 : 1 );
             
-
-            for ( var i = 0; i < 5; i++) {
+            for ( var i = 0; i < 6; i++) {
                 this.getAt ( i + 1 ).setVisible ( isUp );
             }   
             
@@ -1014,7 +1042,7 @@ window.onload = function () {
             return this;
 
         },
-        setPost : function ( cp, col=-1, row=-1 ) {
+        setPost : function ( cp, col=0, row=0 ) {
 
             this.currentPost = cp; 
 
@@ -1023,9 +1051,15 @@ window.onload = function () {
             
             return this;
         },
-   
+        setHome : function ( nmbr ) {
 
-        
+            this.col = 100;
+            this.row = 100;
+
+            this.currentPost = 'home';
+            this.home = nmbr;
+        }
+   
     });
 
 } 

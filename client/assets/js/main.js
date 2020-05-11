@@ -205,7 +205,7 @@ window.onload = function () {
             var bz = 255 * _scale,
                 bs = bz * 0.2,
                 bx = (_gW - ( (2 * bz) + bs ))/2 + bz/2,
-                by = _gH *0.55;
+                by = 440 * _scale;
 
             for ( var i = 0; i < 2; i++ ) {
 
@@ -396,7 +396,7 @@ window.onload = function () {
 
             var txt = this.add.text ( xs, 48*_scale, 'Controls', {color:'#333', fontFamily:'Oswald', fontSize : 16*_scale } ).setOrigin(0.5);
 
-            var btnData = [{ 'id':'restart', val:"Restart Game" }, { 'id':'leave', val:"Leave Game" } ];
+            var btnData = [{ 'id':'restart', val:"Play Another Game" }, { 'id':'leave', val:"Leave Game" } ];
 
             var bw = 270*_scale, 
                 bh = 40 * _scale,
@@ -457,8 +457,6 @@ window.onload = function () {
         },
         initCards : function () {
 
-            var _this = this;
-            
             var strVal = ['A', '2','3','4','5','6','7','8','9','10','J','Q', 'K' ];
 
             var rndOrd = this.generateRandomOrder ();
@@ -466,9 +464,13 @@ window.onload = function () {
             
             this.cardContainer = this.add.container( 0, 0 );
 
+            this.cardsMoving = false;
+
             this.topCardCount = 0; 
             
             this.cardsOutCount = 0;
+
+            this.vel = 100;
 
             this.initialCards = [];
 
@@ -496,7 +498,7 @@ window.onload = function () {
                     this.getAt (0).clearTint ();
                 });
                 crd.on ('pointerdown', function () {
-                    _this.cardClick ( this.id );
+                    this.scene.cardClick ( this.id );
                 });
 
                 this.cardContainer.add ( crd );
@@ -696,6 +698,8 @@ window.onload = function () {
         },
         cardClick : function ( id ) {
 
+            if ( this.cardsMoving ) return;
+
             var card = this.cardContainer.getByName ( id );
 
             var newPost = this.getFieldPosition ( card );
@@ -704,7 +708,11 @@ window.onload = function () {
 
             var cardIsAtBottom = this.getCardIsAtBottom( card );
 
+            var cp = card.currentPost;
+
             if ( homePost != null ) {
+
+                this.playSound ('clickb');
 
                 this.cardContainer.bringToTop ( card );
 
@@ -724,10 +732,12 @@ window.onload = function () {
 
                 card.setHome ( homePost );
 
-                this.playSound ('clickb');
+                this.sendHomers ();
                     
             }
             else if ( newPost != null ) {
+
+                this.playSound ('clickb');
 
                 if ( !cardIsAtBottom ) {
 
@@ -745,8 +755,10 @@ window.onload = function () {
                         ease : "Quad.easeIn"
                     });
 
+                    
                     card.setPost ( 'field', newPost.col, newPost.row );
 
+                    
                 }else {
 
                     var initRow = card.row, initCol = card.col;
@@ -785,12 +797,11 @@ window.onload = function () {
                         backCard.flip().enabled();
                     }
                     
-
-                    //..
-                
                 }
 
-                this.playSound ('clickb');
+                
+                if ( cp != 'home' ) this.sendHomers ();
+                
 
             }
             else {
@@ -846,13 +857,10 @@ window.onload = function () {
 
                 home.setData ('topVal', card.val - 1 );
 
-
             }
             
         },
         getCardIsAtBottom : function ( card ) {
-
-            //console.log ( card.currentPost );
 
             if ( card.currentPost == 'field' ) {
                 if ( this.fieldedCards [ card.col ].length - 1 != card.row ) return true;
@@ -978,6 +986,99 @@ window.onload = function () {
             return finArr;
 
         },
+        sendHomers : function () {
+
+            var vel = this.vel;
+
+            var homers = this.getHomers ();
+
+            if ( homers.length > 0) {
+
+                this.cardsMoving = true;
+
+                for ( var i = 0; i < homers.length; i++ ) {
+
+                    var col = homers [i].col;
+
+                    var last = this.fieldedCards [col].length - 1;
+
+                    var crd = this.fieldedCards [col][last];
+
+                    this.cardContainer.bringToTop ( crd );
+
+                    var home = this.mainContainer.getByName ('home' + homers[i].home );
+
+                    home.setData ({ 'resided' : true, 'topVal' : crd.val, 'knd': crd.knd });
+
+                    this.resultAction ( crd );
+
+                    this.tweens.add ({
+                        targets : crd,
+                        x : home.x,
+                        y : home.y, 
+                        duration : vel,
+                        ease : "Quad.easeIn",
+                        delay : (i * vel) + vel
+                    });
+
+                    crd.setHome ( homers[i].home );
+                   
+                } 
+
+                this.time.delayedCall ( ( homers.length * vel ) + vel, function () {
+                    this.playSound ('flick');
+                    this.sendHomers();
+                }, [], this );
+               
+                this.vel *= 0.9;
+
+            }else {
+
+                //console.log ( 'winner', this.checkWinner() );
+
+                this.cardsMoving = false;
+                
+                this.vel = 100;
+
+                if ( this.isWinner() ) this.endGame();
+            }
+            
+        },
+        getHomers : function () {
+
+            var tmp = [];
+
+            for ( var i in this.fieldedCards ) {
+
+                if ( this.fieldedCards[i].length > 0 ) {
+
+                    var last = this.fieldedCards [i].length - 1;
+
+                    var crd = this.fieldedCards [i][last];
+                        
+                    var hme = this.getHomePosition ( crd );
+
+                    if (  hme != null ) tmp.push ( { 'col' : i, 'home' : hme } );
+
+                }
+                
+            }
+
+            return tmp;
+
+        },
+        isWinner : function () {
+
+            for ( var i = 0; i < 4; i++ ) {
+
+                var home = this.mainContainer.getByName ('home' + i );
+
+                if ( home.getData ('topVal') < 12 ) return false;
+            }
+
+            return true;
+
+        },
         restartPrompt : function () {
 
             this.isPrompted = true;
@@ -986,7 +1087,7 @@ window.onload = function () {
 
             var rect = this.add.rectangle ( _gW/2, _gH/2, 450*_scale, 200*_scale, 0x2e2e2e, 0.9 ).setInteractive();
 
-            var txtr = this.add.text ( _gW/2, _gH * 0.44, 'Are you sure you want to restart?', { color:'#f4f4f4', fontSize:26*_scale, fontFamily:'Oswald'}).setOrigin(0.5);
+            var txtr = this.add.text ( _gW/2, _gH * 0.44, 'Are you sure you want to quit?', { color:'#f4f4f4', fontSize:26*_scale, fontFamily:'Oswald'}).setOrigin(0.5);
 
             this.promptContainer.add ( [rect, txtr] );
 
@@ -1084,6 +1185,62 @@ window.onload = function () {
 
             //..
         },
+        winPrompt : function () {
+
+            
+            this.isPrompted = true;
+
+            this.promptContainer = this.add.container ( 0, 0 );
+
+            var bgRect = this.add.rectangle ( _gW/2, _gH/2, _gW, _gH ).setInteractive();
+
+            var rect = this.add.rectangle ( _gW/2, _gH/2, 450*_scale, 200*_scale, 0x2e2e2e, 0.9 ).setInteractive();;
+
+            var txtr = this.add.text ( _gW/2, _gH * 0.44, 'Congratulations! You Win.', { color:'#f4f4f4', fontSize:26*_scale, fontFamily:'Oswald'}).setOrigin(0.5);
+
+            this.promptContainer.add ( [bgRect, rect, txtr] );
+
+            var bw = 130*_scale, bh = 45 * _scale, bs= bw * 0.15;
+
+            var fx = (_gW - (2 * ( bw + bs ) - bs))/2 + bw/2,
+                fy = _gH *0.56;
+
+            for ( var i = 0; i < 2; i++ ) {
+
+                var miniContainer = this.add.container ( fx + i * ( bw+bs), fy ).setSize(bw, bh).setData('id', i).setInteractive ();
+
+                var rectbtn = this.add.rectangle ( 0, 0, bw, bh, 0x9a9a9a, 1 );
+
+                var txtbtn = this.add.text (0, 0, i == 0? 'Play Again' : 'Leave Game', { color:'#333', fontSize:bh*0.5, fontFamily:'Oswald'}).setOrigin (0.5);
+
+                miniContainer.add ( [rectbtn, txtbtn]);
+
+                miniContainer.on ('pointerover', function () {
+                    this.getAt (0).setFillStyle ( 0xa3a3a3, 1 );
+                });
+                miniContainer.on ('pointerout', function () {
+                    this.getAt (0).setFillStyle ( 0xcecece, 1 );
+                });
+                miniContainer.on ('pointerup', function () {
+                    this.getAt (0).setFillStyle ( 0xcecece, 1 );
+                });
+                miniContainer.on ('pointerdown', function () {
+                    
+                    this.scene.playSound ('clicka');
+
+                    if ( this.getData ('id') == 0 ) {
+                        this.scene.resetGame ();
+                    }else {
+                        this.scene.leaveGame ();
+                    }
+                });
+
+                this.promptContainer.add ( miniContainer );
+
+            }
+
+            //..
+        },
         removePrompt : function () {
 
             if ( !this.isPrompted ) return;
@@ -1092,6 +1249,14 @@ window.onload = function () {
 
             this.promptContainer.destroy ();
 
+        },
+        endGame : function () {
+
+            this.playSound ('alternate');
+
+            this.winPrompt ();
+
+            
         },
         resetGame : function () {
 

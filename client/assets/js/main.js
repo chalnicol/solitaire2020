@@ -280,6 +280,8 @@ window.onload = function () {
 
             this.mode = data;
 
+            this.isGameOn = false;
+
             this.initGraphics ();
 
             this.initMenuSound ();
@@ -289,9 +291,6 @@ window.onload = function () {
             this.initControls ();
 
             this.time.delayedCall ( 500, this.initCards, [], this );
-
-            //this.time.delayedCall ( 1000, this.initControls, [], this );
-
 
         },
         initMenuSound : function () {
@@ -424,6 +423,8 @@ window.onload = function () {
                 });
                 rct.on ('pointerdown', function () {
                     
+                    if ( !this.scene.isGameOn ) return;
+
                     this.getAt (0).setFillStyle ( 0xffffff, 1 );
 
                     this.scene.playSound ('clicka');
@@ -455,12 +456,14 @@ window.onload = function () {
             this.cardContainer = this.add.container( 0, 0 );
 
             this.cardsMoving = false;
+            
+            this.isGameOn = true;
 
             this.topCardCount = 0; 
             
             this.cardsOutCount = 0;
 
-            this.vel = 100;
+            this.vel = 150;
 
             this.initialCards = [];
 
@@ -498,7 +501,6 @@ window.onload = function () {
             }
 
 
-
             this.fieldedCards = [];
 
             var counter = 0;
@@ -515,7 +517,7 @@ window.onload = function () {
 
                     this.cardContainer.bringToTop ( card );
 
-                    card.setPost ( 'field', i, j );
+                    card.setPost ( i, j );
 
                     if ( i == j ) card.enabled();
 
@@ -689,29 +691,28 @@ window.onload = function () {
         },
         cardClick : function ( id ) {
 
-            if ( this.cardsMoving ) return;
+            if ( this.cardsMoving || !this.isGameOn ) return;
 
             var card = this.cardContainer.getByName ( id );
 
-            var newPost = this.getFieldPosition ( card );
+            var cardData = this.getCardDataForAction ( card );
 
-            var homePost = this.getHomePosition ( card );
+            //get home position if available
+            var homePost = this.getHomePosition ( cardData );
 
-            var cardIsAtBottom = this.getCardIsAtBottom( card );
+            //or get field position if available
+            var newPost = this.getFieldPosition ( cardData ); 
 
-            var cp = card.currentPost;
 
             if ( homePost != null ) {
 
                 this.playSound ('clickb');
 
-                this.cardContainer.bringToTop ( card );
-
                 var home = this.mainContainer.getByName ('home' + homePost );
 
                 home.setData ({ 'resided' : true, 'topVal' : card.val, 'knd': card.knd });
 
-                this.resultAction ( card );
+                this.cardContainer.bringToTop ( card );
 
                 this.tweens.add ({
                     targets : card,
@@ -723,6 +724,10 @@ window.onload = function () {
 
                 card.setHome ( homePost );
 
+                //..checking...
+
+                this.resultAction ( cardData );
+
                 this.sendHomers ();
                     
             }
@@ -730,14 +735,13 @@ window.onload = function () {
 
                 this.playSound ('clickb');
 
-                if ( !cardIsAtBottom ) {
+                 //check if card is being overlapped if at field..
+                var crdIsOverlapped = this.getCardIsAtBottom( cardData ) 
+
+                if ( !crdIsOverlapped ) {
 
                     this.cardContainer.bringToTop ( card );
 
-                    if ( newPost.col >= 0 ) this.fieldedCards [ newPost.col ].push ( card );
-
-                    this.resultAction ( card );
-                
                     this.tweens.add ({
                         targets : card,
                         x : newPost.x,
@@ -746,8 +750,9 @@ window.onload = function () {
                         ease : "Quad.easeIn"
                     });
 
-                    
-                    card.setPost ( 'field', newPost.col, newPost.row );
+                    card.setPost ( newPost.col, newPost.row );
+
+                    this.fieldedCards [ newPost.col ].push ( card );
 
                     
                 }else {
@@ -755,8 +760,6 @@ window.onload = function () {
                     var initRow = card.row, initCol = card.col;
 
                     var arr = this.fieldedCards[ initCol ].slice ( initRow );
-
-                    //console.log ('is at bottom', arr.length );
 
                     for ( var i = 0; i < arr.length; i++ ) {
 
@@ -772,8 +775,8 @@ window.onload = function () {
                             ease : "Quad.easeIn"
                         });
 
-                        crd.currentPost = 'field';
-                        crd.setPost ( 'field', newPost.col, newPost.row + i );
+                        //crd.currentPost = 'field';
+                        crd.setPost ( newPost.col, newPost.row + i );
 
                         this.fieldedCards [newPost.col].push ( crd );
                         
@@ -781,19 +784,12 @@ window.onload = function () {
 
                     this.fieldedCards[initCol].splice ( initRow );
 
-                    if ( this.fieldedCards[initCol].length > 0 ) {
-
-                        var backCard = this.fieldedCards[initCol][ this.fieldedCards[initCol].length - 1];
-                    
-                        backCard.flip().enabled();
-                    }
-                    
                 }
 
-                
-                if ( cp != 'home' ) this.sendHomers ();
-                
+                this.resultAction ( cardData, crdIsOverlapped );
 
+                if ( cardData.currentPost != 'home' ) this.sendHomers ();
+                
             }
             else {
                 
@@ -801,71 +797,94 @@ window.onload = function () {
             }
             
         },
-        resultAction : function ( card ) {
 
+        getCardDataForAction : function ( crd ) {
 
-            if ( card.currentPost == '' ) {
-
-                var index = this.getCurrentIndex ( card.id );
-
-                this.initialCards.splice ( index, 1 );
-
-                if ( index != this.initialCards.length ) {
-                    this.initialCards [index].enabled ();
-                }
-                
-                this.topCardCount += -1;
-                
-                if ( this.mode == 'easy' ) {
-
-                    if ( this.topCardCount <= 0 ) {
-
-                        this.cardsOutCount = 0;
-
-                    }else {
-
-                        if ( this.cardsOutCount > 1 )  this.cardsOutCount += -1;
-                    }
-
-                }
-
-
-            }else if ( card.currentPost == 'field' ) {
-
-                this.fieldedCards [ card.col ].pop ();
-
-                if ( this.fieldedCards [card.col].length > 0 ) {
-
-                    var newLast = this.fieldedCards [ card.col ].length - 1;
-
-                    this.fieldedCards [ card.col ] [newLast].flip ().enabled();
-                }
-
-
-            }else {
-
-                var home = this.mainContainer.getByName ('home' + card.home ) ;
-
-                home.setData ('topVal', card.val - 1 );
-
-            }
+           return {
+               id : crd.id,
+               knd : crd.knd, 
+               clr : crd.clr,
+               row : crd.row, 
+               col : crd.col,
+               val : crd.val, 
+               home : crd.home,
+               currentPost : crd.currentPost
+           }
             
         },
-        getCardIsAtBottom : function ( card ) {
+        resultAction : function ( data, isOverlapped = false ) {
 
-            if ( card.currentPost == 'field' ) {
-                if ( this.fieldedCards [ card.col ].length - 1 != card.row ) return true;
+
+            switch ( data.currentPost ) {
+
+                case "":
+
+                    var index = this.getInitIndex ( data.id );
+
+                    this.initialCards.splice ( index, 1 );
+    
+                    if ( index != this.initialCards.length ) {
+                        this.initialCards [index].enabled ();
+                    }
+                    
+                    this.topCardCount += -1;
+                    
+                    if ( this.mode == 'easy' ) {
+    
+                        if ( this.topCardCount <= 0 ) {
+    
+                            this.cardsOutCount = 0;
+    
+                        }else {
+    
+                            if ( this.cardsOutCount > 1 )  this.cardsOutCount += -1;
+                        }
+    
+                    }
+
+                break;
+
+                case "field" :
+
+                    if ( !isOverlapped ) this.fieldedCards [ data.col ].pop ();
+
+                    if ( this.fieldedCards [data.col].length > 0 ) {
+
+                        var newLast = this.fieldedCards [ data.col ].length - 1;
+
+                        this.fieldedCards [ data.col ] [newLast].flip ().enabled();
+                    }   
+
+                break;
+
+                case "home" : 
+
+                    var home = this.mainContainer.getByName ('home' + data.home ) ;
+
+                    home.setData ('topVal', data.val - 1);
+
+                break;
+            }
+            
+            
+        },
+        getCardIsAtBottom : function ( data ) {
+
+            if ( data.currentPost == 'field' ) {
+                if ( this.fieldedCards [ data.col ].length - 1 != data.row ) return true;
             }
             return false;
         },
-        getCurrentIndex : function ( id, cp='' ) {
+        getInitIndex : function ( id, origin='' ) {
 
-            if ( cp == '' ) {
+            if ( origin == '' ) {
 
                 for ( var i in this.initialCards ) {
+
                     if ( this.initialCards [i].id == id ) {
                         return i;
                     }
+
                 }
 
             }
@@ -879,9 +898,9 @@ window.onload = function () {
                 val = data.val,
                 col = data.col;
 
-            if ( val !== 0 ) {
+            if ( data.val !== 0 ) {
 
-                if ( val == 12 ) {
+                if ( data.val == 12 ) {
 
                     for ( var i in this.fieldedCards ) {
 
@@ -905,9 +924,9 @@ window.onload = function () {
         
                             var lastCard = this.fieldedCards [i] [last];
             
-                            if ( i != col ) {
+                            if ( i != data.col ) {
             
-                                if ( lastCard.clr != clr && lastCard.val == ( val + 1) ) {
+                                if ( lastCard.clr != data.clr && lastCard.val == ( data.val + 1 ) ) {
             
                                     return { 
                                         'x' : lastCard.x, 'y' : lastCard.y + (lastCard.height * 0.2),
@@ -975,8 +994,6 @@ window.onload = function () {
 
             var homers = this.getHomers ();
 
-          
-
             if ( homers.length > 0 ) {
 
                 this.cardsMoving = true;
@@ -984,7 +1001,6 @@ window.onload = function () {
                 for ( var i = 0; i < homers.length; i++ ) {
 
 
-    
                     if ( homers[i].origin == '' ) {
 
                         console.log ( 'this 1');
@@ -1003,29 +1019,30 @@ window.onload = function () {
 
                     }
                     
+                    var cardData = this.getCardDataForAction ( crd );
 
                     this.cardContainer.bringToTop ( crd );
 
-                    var home = this.mainContainer.getByName ('home' + homers[i].home );
+                    var hme = this.mainContainer.getByName ('home' + homers[i].home );
 
-                    home.setData ({ 'resided' : true, 'topVal' : crd.val, 'knd': crd.knd });
-
-                    this.resultAction ( crd );
+                    hme.setData ({ 'resided' : true, 'topVal' : crd.val, 'knd': crd.knd });
 
                     this.tweens.add ({
                         targets : crd,
-                        x : home.x,
-                        y : home.y, 
+                        x : hme.x,
+                        y : hme.y, 
                         duration : vel,
                         ease : "Quad.easeIn",
-                        delay : (i * vel) + vel
+                        delay : (i * vel)
                     });
 
                     crd.setHome ( homers[i].home );
+
+                    this.resultAction ( cardData );
                    
                 } 
 
-                this.time.delayedCall ( ( homers.length * vel ) + vel, function () {
+                this.time.delayedCall ( ( homers.length * vel ), function () {
                     this.playSound ('flick');
                     this.sendHomers();
                 }, [], this );
@@ -1038,7 +1055,7 @@ window.onload = function () {
 
                 this.cardsMoving = false;
                 
-                this.vel = 100;
+                this.vel = 150;
 
                 if ( this.isWinner() ) this.endGame();
             }
@@ -1094,11 +1111,9 @@ window.onload = function () {
         },
         showPrompt : function ( txt, btnData ) {
 
-
             this.isPrompted = true;
 
-            
-            this.bgRect = this.add.rectangle ( _gW/2, _gH/2, _gW, _gH, 0xf3f3f3, 0.2 ).setInteractive();
+            this.bgRect = this.add.rectangle ( _gW/2, _gH/2, _gW, _gH, 0x0a0a0a, 0.4 ).setInteractive();
 
             this.promptContainer = this.add.container ( 0, _gH );
 
@@ -1135,7 +1150,7 @@ window.onload = function () {
                     this.getAt (0).setFillStyle ( 0xcecece, 1 );
                 });
                 miniContainer.on ('pointerdown', function () {
-                    
+                    //...
                 });
 
                 this.promptContainer.add ( miniContainer );
@@ -1229,11 +1244,16 @@ window.onload = function () {
         },
         endGame : function () {
 
-            this.playSound ('alternate');
+            this.isGameOn = false;
 
-            this.winPrompt ();
+            this.time.delayedCall ( 300, function () {
 
-            
+                this.playSound ('alternate');
+
+                this.winPrompt ();
+
+            }, [], this );
+
         },
         resetGame : function () {
 
@@ -1358,9 +1378,9 @@ window.onload = function () {
             return this;
 
         },
-        setPost : function ( cp, col=0, row=0 ) {
+        setPost : function ( col=0, row=0 ) {
 
-            this.currentPost = cp; 
+            this.currentPost = 'field'; 
 
             this.col = col;
             this.row = row;

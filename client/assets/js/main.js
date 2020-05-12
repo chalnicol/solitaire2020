@@ -414,7 +414,7 @@ window.onload = function () {
                 rct.add ([ rcta, txet]);
 
                 rct.on ('pointerover', function () {
-                    this.getAt (0).setFillStyle ( 0xdedede, 1 );
+                    this.getAt (0).setFillStyle ( 0xffffff, 1 );
                 });
                 rct.on ('pointerout', function () {
                     this.getAt (0).setFillStyle ( 0xcecece, 1 );
@@ -424,29 +424,19 @@ window.onload = function () {
                 });
                 rct.on ('pointerdown', function () {
                     
-                    this.getAt (0).setFillStyle ( 0xdedede, 1 );
+                    this.getAt (0).setFillStyle ( 0xffffff, 1 );
 
-                    if ( this.scene.isPrompted ) {
+                    this.scene.playSound ('clicka');
 
-                        this.scene.playSound ('error')
+                    if ( this.getData('id') == 'restart') {
+                        
+                        this.scene.restartPrompt ();
 
                     }else {
 
-                        this.scene.playSound ('clicka');
-
-                        if ( this.getData('id') == 'restart') {
-                            
-                            this.scene.restartPrompt ();
-
-                        }else {
-
-                            this.scene.leavePrompt ();
-                        }
-
+                        this.scene.leavePrompt ();
                     }
-
-                    
-                   
+    
                 });
 
 

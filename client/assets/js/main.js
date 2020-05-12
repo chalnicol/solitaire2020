@@ -559,7 +559,8 @@ window.onload = function () {
 
             this.playSound ('clickb');
 
-            var openX = 200 * _scale 
+            var openX = 200 * _scale ;
+
             if ( this.topCardCount < this.initialCards.length ) {
 
                 if ( this.mode == 'easy') {
@@ -951,14 +952,6 @@ window.onload = function () {
     
                     if ((data.val - 1) == home.getData('topVal') && data.knd == home.getData ('knd')  ) return i;
     
-                    /* if ( data.val >= 2 ) {
-    
-                        var fpos = this.getFieldPosition ( data );
-    
-                        if ( fpos == null && (data.val - 1) == home.getData('topVal') && data.knd == home.getData ('knd')  ) return i;
-    
-                    } */
-                    
                 }
             }
             return null;
@@ -992,17 +985,34 @@ window.onload = function () {
 
             var homers = this.getHomers ();
 
-            if ( homers.length > 0) {
+          
+
+            if ( homers.length > 0 ) {
 
                 this.cardsMoving = true;
 
                 for ( var i = 0; i < homers.length; i++ ) {
 
-                    var col = homers [i].col;
 
-                    var last = this.fieldedCards [col].length - 1;
+    
+                    if ( homers[i].origin == '' ) {
 
-                    var crd = this.fieldedCards [col][last];
+                        console.log ( 'this 1');
+
+                        var cnt = this.initialCards.length - this.topCardCount ;
+
+                        var crd = this.initialCards [ cnt ];
+        
+                    }else {
+
+                        var col = homers [i].col;
+
+                        var last = this.fieldedCards [col].length - 1;
+
+                        var crd = this.fieldedCards [col][last];
+
+                    }
+                    
 
                     this.cardContainer.bringToTop ( crd );
 
@@ -1058,11 +1068,24 @@ window.onload = function () {
                         
                     var hme = this.getHomePosition ( crd );
 
-                    if (  hme != null ) tmp.push ( { 'col' : i, 'home' : hme } );
+                    if (  hme != null ) tmp.push ( { 'origin' :'field', 'col' : i, 'home' : hme } );
 
                 }
                 
             }
+
+            if ( this.topCardCount > 0 ) {
+
+                var cnt = this.initialCards.length - this.topCardCount ;
+
+                var initBoxTopCard = this.initialCards [ cnt ];
+
+                var inithme = this.getHomePosition ( initBoxTopCard );
+
+                if (  inithme != null ) tmp.push ( { 'origin' :'', 'col' : 0, 'home' : inithme } );
+
+            }
+
 
             return tmp;
 
@@ -1079,15 +1102,19 @@ window.onload = function () {
             return true;
 
         },
-        restartPrompt : function () {
+        showPrompt : function ( txt, btnData ) {
+
 
             this.isPrompted = true;
 
-            this.promptContainer = this.add.container ( 0, 0 );
+            
+            this.bgRect = this.add.rectangle ( _gW/2, _gH/2, _gW, _gH, 0xf3f3f3, 0.2 ).setInteractive();
 
-            var rect = this.add.rectangle ( _gW/2, _gH/2, 450*_scale, 200*_scale, 0x2e2e2e, 0.9 ).setInteractive();
+            this.promptContainer = this.add.container ( 0, _gH );
 
-            var txtr = this.add.text ( _gW/2, _gH * 0.44, 'Are you sure you want to quit?', { color:'#f4f4f4', fontSize:26*_scale, fontFamily:'Oswald'}).setOrigin(0.5);
+            var rect = this.add.rectangle ( _gW/2, _gH/2, 450*_scale, 200*_scale, 0x1c1c1c, 0.9 ).setInteractive();;
+
+            var txtr = this.add.text ( _gW/2, _gH * 0.44, txt, { color:'#f4f4f4', fontSize:26*_scale, fontFamily:'Oswald'}).setOrigin(0.5);
 
             this.promptContainer.add ( [rect, txtr] );
 
@@ -1096,18 +1123,20 @@ window.onload = function () {
             var fx = (_gW - (2 * ( bw + bs ) - bs))/2 + bw/2,
                 fy = _gH *0.56;
 
-            for ( var i = 0; i < 2; i++ ) {
+            var arr = [];
 
-                var miniContainer = this.add.container ( fx + i * ( bw+bs), fy ).setSize(bw, bh).setData('id', i).setInteractive ();
+            for ( var i = 0; i < btnData.length; i++ ) {
 
-                var rectbtn = this.add.rectangle ( 0, 0, bw, bh, 0x9a9a9a, 1 );
+                var miniContainer = this.add.container ( fx + i * ( bw+bs), fy ).setSize(bw, bh).setData('id', btnData[i].id ).setInteractive ();
 
-                var txtbtn = this.add.text (0, 0, i == 0? 'Yes' : 'No', { color:'#333', fontSize:bh*0.5, fontFamily:'Oswald'}).setOrigin (0.5);
+                var rectbtn = this.add.rectangle ( 0, 0, bw, bh, 0xcecece, 1 );
+
+                var txtbtn = this.add.text (0, 0, btnData[i].val, { color:'#333', fontSize:bh*0.5, fontFamily:'Oswald'}).setOrigin (0.5);
 
                 miniContainer.add ( [rectbtn, txtbtn]);
 
                 miniContainer.on ('pointerover', function () {
-                    this.getAt (0).setFillStyle ( 0xa3a3a3, 1 );
+                    this.getAt (0).setFillStyle ( 0xffffcc, 1 );
                 });
                 miniContainer.on ('pointerout', function () {
                     this.getAt (0).setFillStyle ( 0xcecece, 1 );
@@ -1117,127 +1146,83 @@ window.onload = function () {
                 });
                 miniContainer.on ('pointerdown', function () {
                     
-                    this.scene.playSound ('clicka');
-
-                    if ( this.getData ('id') == 0 ) {
-                        this.scene.resetGame ();
-                    }else {
-                        this.scene.removePrompt();
-                    }
                 });
 
                 this.promptContainer.add ( miniContainer );
 
+                arr.push ( miniContainer );
+
             }
 
-            //..
+            this.tweens.add ({
+                targets : this.promptContainer,
+                y : 0,
+                duration : 300,
+                ease : 'Power3'
+            });
+
+            return arr;
+
+
+        },
+        restartPrompt : function () {
+
+            var btnData = [
+                { 'id': 'restart', 'val': 'Yes' },
+                { 'id': 'cancel', 'val': 'No' },
+            ];
+
+            var btns = this.showPrompt ('Are you sure you want to play again?', btnData );
+
+            btns[0].on ('pointerdown', function () {
+                this.scene.playSound ('clicka');
+                this.scene.resetGame ();
+            });
+            btns[1].on ('pointerdown', function () {
+                this.scene.playSound ('clicka');
+                this.scene.removePrompt ();
+            });
+            
+            
+
         },
         leavePrompt : function () {
 
-            this.isPrompted = true;
+            var btnData = [
+                { 'id': 'leave', 'val': 'Yes' },
+                { 'id': 'cancel', 'val': 'No' },
+            ];
 
-            this.promptContainer = this.add.container ( 0, 0 );
+            var btns = this.showPrompt ('Are you sure you want leave?', btnData );
 
-            var rect = this.add.rectangle ( _gW/2, _gH/2, 450*_scale, 200*_scale, 0x2e2e2e, 0.9 ).setInteractive();;
-
-            var txtr = this.add.text ( _gW/2, _gH * 0.44, 'Are you sure you want to leave?', { color:'#f4f4f4', fontSize:26*_scale, fontFamily:'Oswald'}).setOrigin(0.5);
-
-            this.promptContainer.add ( [rect, txtr] );
-
-            var bw = 130*_scale, bh = 45 * _scale, bs= bw * 0.15;
-
-            var fx = (_gW - (2 * ( bw + bs ) - bs))/2 + bw/2,
-                fy = _gH *0.56;
-
-            for ( var i = 0; i < 2; i++ ) {
-
-                var miniContainer = this.add.container ( fx + i * ( bw+bs), fy ).setSize(bw, bh).setData('id', i).setInteractive ();
-
-                var rectbtn = this.add.rectangle ( 0, 0, bw, bh, 0x9a9a9a, 1 );
-
-                var txtbtn = this.add.text (0, 0, i == 0? 'Yes' : 'No', { color:'#333', fontSize:bh*0.5, fontFamily:'Oswald'}).setOrigin (0.5);
-
-                miniContainer.add ( [rectbtn, txtbtn]);
-
-                miniContainer.on ('pointerover', function () {
-                    this.getAt (0).setFillStyle ( 0xa3a3a3, 1 );
-                });
-                miniContainer.on ('pointerout', function () {
-                    this.getAt (0).setFillStyle ( 0xcecece, 1 );
-                });
-                miniContainer.on ('pointerup', function () {
-                    this.getAt (0).setFillStyle ( 0xcecece, 1 );
-                });
-                miniContainer.on ('pointerdown', function () {
-                    
-                    this.scene.playSound ('clicka');
-
-                    if ( this.getData ('id') == 0 ) {
-                        this.scene.leaveGame ();
-                    }else {
-                        this.scene.removePrompt();
-                    }
-                });
-
-                this.promptContainer.add ( miniContainer );
-
-            }
+            btns[0].on ('pointerdown', function () {
+                this.scene.playSound ('clicka');
+                this.scene.leaveGame ();
+            });
+            btns[1].on ('pointerdown', function () {
+                this.scene.playSound ('clicka');
+                this.scene.removePrompt ();
+            });
 
             //..
         },
         winPrompt : function () {
 
-            
-            this.isPrompted = true;
+            var btnData = [
+                { 'id': 'restart', 'val': 'Play Again' },
+                { 'id': 'leave', 'val': 'Leave Game' },
+            ];
 
-            this.promptContainer = this.add.container ( 0, 0 );
+            var btns = this.showPrompt ('Congratulations! You Win.', btnData );
 
-            var bgRect = this.add.rectangle ( _gW/2, _gH/2, _gW, _gH ).setInteractive();
-
-            var rect = this.add.rectangle ( _gW/2, _gH/2, 450*_scale, 200*_scale, 0x2e2e2e, 0.9 ).setInteractive();;
-
-            var txtr = this.add.text ( _gW/2, _gH * 0.44, 'Congratulations! You Win.', { color:'#f4f4f4', fontSize:26*_scale, fontFamily:'Oswald'}).setOrigin(0.5);
-
-            this.promptContainer.add ( [bgRect, rect, txtr] );
-
-            var bw = 130*_scale, bh = 45 * _scale, bs= bw * 0.15;
-
-            var fx = (_gW - (2 * ( bw + bs ) - bs))/2 + bw/2,
-                fy = _gH *0.56;
-
-            for ( var i = 0; i < 2; i++ ) {
-
-                var miniContainer = this.add.container ( fx + i * ( bw+bs), fy ).setSize(bw, bh).setData('id', i).setInteractive ();
-
-                var rectbtn = this.add.rectangle ( 0, 0, bw, bh, 0x9a9a9a, 1 );
-
-                var txtbtn = this.add.text (0, 0, i == 0? 'Play Again' : 'Leave Game', { color:'#333', fontSize:bh*0.5, fontFamily:'Oswald'}).setOrigin (0.5);
-
-                miniContainer.add ( [rectbtn, txtbtn]);
-
-                miniContainer.on ('pointerover', function () {
-                    this.getAt (0).setFillStyle ( 0xa3a3a3, 1 );
-                });
-                miniContainer.on ('pointerout', function () {
-                    this.getAt (0).setFillStyle ( 0xcecece, 1 );
-                });
-                miniContainer.on ('pointerup', function () {
-                    this.getAt (0).setFillStyle ( 0xcecece, 1 );
-                });
-                miniContainer.on ('pointerdown', function () {
-                    
-                    this.scene.playSound ('clicka');
-
-                    if ( this.getData ('id') == 0 ) {
-                        this.scene.resetGame ();
-                    }else {
-                        this.scene.leaveGame ();
-                    }
-                });
-
-                this.promptContainer.add ( miniContainer );
-
-            }
+            btns[0].on ('pointerdown', function () {
+                this.scene.playSound ('clicka');
+                this.scene.resetGame ();
+            });
+            btns[1].on ('pointerdown', function () {
+                this.scene.playSound ('clicka');
+                this.scene.leaveGame ();
+            });
 
             //..
         },
@@ -1248,6 +1233,8 @@ window.onload = function () {
             this.isPrompted = false;
 
             this.promptContainer.destroy ();
+
+            this.bgRect.destroy ();
 
         },
         endGame : function () {

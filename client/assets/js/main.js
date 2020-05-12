@@ -424,7 +424,7 @@ window.onload = function () {
                 });
                 rct.on ('pointerdown', function () {
                     
-                    this.getAt (0).setFillStyle ( 0xff9999, 1 );
+                    this.getAt (0).setFillStyle ( 0xdedede, 1 );
 
                     if ( this.scene.isPrompted ) {
 

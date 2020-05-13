@@ -373,7 +373,7 @@ window.onload = function () {
                 var xp = fx + i * (cardW + fs),
                     yp = fy;
 
-                var fieldContainer = this.add.container ( xp, yp ).setName ('field' + i ).setData('col', i );
+                var fieldContainer = this.add.container ( xp, yp ).setName ('field' + i ).setData( {'col':i, spacing:0 });
 
                 var rectc = this.add.rectangle ( 0, 0, cardW, cardH, 0xffffff, 0.6 );
 
@@ -524,7 +524,7 @@ window.onload = function () {
                     this.tweens.add ({
                         targets : card,
                         x : fc.x,
-                        y : fc.y + j * ( ch * 0.2 ),
+                        y : fc.y + j * ( ch * 0.15 ),
                         duration : 100,
                         ease : 'Power2',
                         delay : counter * 10,
@@ -928,7 +928,7 @@ window.onload = function () {
                                 if ( lastCard.clr != data.clr && lastCard.val == ( data.val + 1 ) ) {
             
                                     return { 
-                                        'x' : lastCard.x, 'y' : lastCard.y + (lastCard.height * 0.2),
+                                        'x' : lastCard.x, 'y' : lastCard.y + (lastCard.height * 0.2 ),
                                         'col' : lastCard.col,
                                         'row' : lastCard.row + 1
                                     }
@@ -1002,7 +1002,7 @@ window.onload = function () {
 
                     if ( homers[i].origin == '' ) {
 
-                        console.log ( 'this 1');
+                        //console.log ( 'this 1');
 
                         var cnt = this.initialCards.length - this.topCardCount ;
 
@@ -1051,6 +1051,7 @@ window.onload = function () {
             }else {
 
                 //console.log ( 'winner', this.checkWinner() );
+                this.checkColumnLength ();
 
                 this.cardsMoving = false;
                 
@@ -1059,6 +1060,48 @@ window.onload = function () {
                 if ( this.isWinner() ) this.endGame();
             }
             
+        },
+        checkColumnLength: function () {
+
+            for ( var i in this.fieldedCards ) {
+
+                var colLength = this.fieldedCards [i].length;
+
+                var field = this.mainContainer.getByName ('field' + i );
+
+                //if ( colLength > 10 ) console.log ( 'col', i );
+
+                if ( colLength >= 15 ) {
+
+                    if ( field.getData('spacing') == 0 ) {
+
+                        for ( var j in this.fieldedCards[i] ) {
+
+                            var card = this.fieldedCards[i][j];
+
+                            card.y = field.y + j * ( card.height * 0.15 );
+                        }
+
+                        field.setData ('spacing', 1 );
+                    }
+
+                }else {
+
+                    if ( field.getData('spacing') == 1 ) {
+
+                        for ( var j in this.fieldedCards[i] ) {
+
+                            var card = this.fieldedCards[i][j];
+
+                            card.y = field.y + j * ( card.height * 0.2 );
+                        }
+
+                        field.getData ('spacing', 0 );
+                    }
+
+                }
+
+            }
         },
         getHomers : function () {
 

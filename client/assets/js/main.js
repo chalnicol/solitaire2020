@@ -797,7 +797,6 @@ window.onload = function () {
             }
             
         },
-
         getCardDataForAction : function ( crd ) {
 
            return {

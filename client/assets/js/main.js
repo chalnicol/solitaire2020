@@ -956,8 +956,13 @@ window.onload = function () {
 
                     var home = this.mainContainer.getByName ('home' + i);
     
-                    if ( data.val == 0 && data.currentPost != 'home' && !home.getData('resided') ) return i;
-    
+                    if ( data.val == 0 && data.currentPost != 'home' && !home.getData('resided') ) {
+
+                        home.setData ('resided', true );
+
+                        return i;
+                    }
+                    
                     if ((data.val - 1) == home.getData('topVal') && data.knd == home.getData ('knd')  ) return i;
     
                 }

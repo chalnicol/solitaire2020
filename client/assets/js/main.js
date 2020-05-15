@@ -266,7 +266,6 @@ window.onload = function () {
         {
             Phaser.Scene.call(this, { key: 'sceneB' });
         },
-
         preload : function () {
 
         },
@@ -276,7 +275,7 @@ window.onload = function () {
                 w : 100 * _scale,  h : 135 * _scale,
             };
 
-            console.log ( data );
+            this.crdSpacing = this.card.w * 0.3;
 
             this.mode = data;
 
@@ -500,7 +499,6 @@ window.onload = function () {
 
             }
 
-
             this.fieldedCards = [];
 
             var counter = 0;
@@ -510,6 +508,8 @@ window.onload = function () {
                 this.fieldedCards [i] = [];
 
                 var fc = this.mainContainer.getByName ('field' + i );
+
+                fc.setData ('spacing', 0 );
 
                 for ( var j = 0; j < (i + 1); j++ ) {
 
@@ -524,7 +524,7 @@ window.onload = function () {
                     this.tweens.add ({
                         targets : card,
                         x : fc.x,
-                        y : fc.y + j * ( ch * 0.15 ),
+                        y : fc.y + j * ( this.crdSpacing ),
                         duration : 100,
                         ease : 'Power2',
                         delay : counter * 10,
@@ -543,7 +543,7 @@ window.onload = function () {
 
             this.time.delayedCall ( 50, function () {
                 this.playSound ('ending');
-            }, [], this);
+            }, [], this); 
             //...
 
         },
@@ -710,7 +710,7 @@ window.onload = function () {
 
                 var home = this.mainContainer.getByName ('home' + homePost );
 
-                home.setData ({ 'resided' : true, 'topVal' : card.val, 'knd': card.knd });
+                home.setData ({'topVal' : card.val, 'knd': card.knd });
 
                 this.cardContainer.bringToTop ( card );
 
@@ -770,7 +770,7 @@ window.onload = function () {
                         this.tweens.add ({
                             targets : crd,
                             x : newPost.x,
-                            y : newPost.y + (i * crd.height*0.2 ), 
+                            y : newPost.y + (i * this.crdSpacing ), 
                             duration : 100,
                             ease : "Quad.easeIn"
                         });
@@ -928,7 +928,7 @@ window.onload = function () {
                                 if ( lastCard.clr != data.clr && lastCard.val == ( data.val + 1 ) ) {
             
                                     return { 
-                                        'x' : lastCard.x, 'y' : lastCard.y + (lastCard.height * 0.2 ),
+                                        'x' : lastCard.x, 'y' : lastCard.y + this.crdSpacing,
                                         'col' : lastCard.col,
                                         'row' : lastCard.row + 1
                                     }
@@ -946,7 +946,6 @@ window.onload = function () {
 
         },
         getHomePosition : function ( data ) {
-
 
             var isBottom = this.getCardIsAtBottom ( data );
 
@@ -1055,14 +1054,18 @@ window.onload = function () {
 
             }else {
 
-                //console.log ( 'winner', this.checkWinner() );
-                this.checkColumnLength ();
-
-                this.cardsMoving = false;
-                
                 this.vel = 150;
 
-                if ( this.isWinner() ) this.endGame();
+                this.time.delayedCall ( 300, function () {
+
+                    this.checkColumnLength();
+
+                    this.cardsMoving = false;
+
+                    if ( this.isWinner() ) this.endGame();
+
+                }, [], this );
+
             }
             
         },
@@ -1076,29 +1079,28 @@ window.onload = function () {
 
                 //if ( colLength > 10 ) console.log ( 'col', i );
 
-                if ( colLength >= 15 ) {
+                if ( colLength >= 13 ) {
 
-                    if ( field.getData('spacing') == 0 ) {
+                    var perc = colLength > 15 ? 0.16 : 0.2;
 
-                        for ( var j in this.fieldedCards[i] ) {
+                    for ( var j in this.fieldedCards[i] ) {
 
-                            var card = this.fieldedCards[i][j];
+                        var card = this.fieldedCards[i][j];
 
-                            card.y = field.y + j * ( card.height * 0.15 );
-                        }
-
-                        field.setData ('spacing', 1 );
+                        card.y = field.y + j * ( card.height * perc );
                     }
 
+                    field.setData ('spacing', 1 );
+                    
                 }else {
 
-                    if ( field.getData('spacing') == 1 ) {
+                    if ( field.getData('spacing') != 0 ) {
 
                         for ( var j in this.fieldedCards[i] ) {
 
                             var card = this.fieldedCards[i][j];
 
-                            card.y = field.y + j * ( card.height * 0.2 );
+                            card.y = field.y + j * this.crdSpacing;
                         }
 
                         field.getData ('spacing', 0 );
@@ -1293,13 +1295,11 @@ window.onload = function () {
 
             this.isGameOn = false;
 
-            this.time.delayedCall ( 300, function () {
+            this.playSound ('alternate');
 
-                this.playSound ('alternate');
+            this.winPrompt ();
 
-                this.winPrompt ();
-
-            }, [], this );
+            
 
         },
         resetGame : function () {

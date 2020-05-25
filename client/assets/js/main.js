@@ -572,22 +572,13 @@ window.onload = function () {
                     this.cardContainer.bringToTop ( card );
         
                     card.flip().enabled();
-                    
-                    
-                    if ( this.cardsOutCount > 3 ) {
 
-                        card.x = openX + ( this.cardsOutCount * (card.width*0.3));
-
-                    } else {
-
-                        this.tweens.add ({
-                            targets: card,
-                            x : openX + ( this.cardsOutCount * (card.width*0.3)),
-                            duration : 100,
-                            ease : 'Power2',
-                        });
-
-                    }
+                    this.tweens.add ({
+                        targets: card,
+                        x : openX + ( this.cardsOutCount * (card.width*0.3)),
+                        duration : 200,
+                        ease : 'Power3',
+                    });
                     
                     this.topCardCount += 1;
 
@@ -610,8 +601,8 @@ window.onload = function () {
                                 targets: tc,
                                 x : openX + j * ( tc.width*0.3),
                                 duration : 200,
-                                ease : 'Power2',
-                                delay : 100
+                                ease : 'Power3',
+                                delay : 400
                             });
 
                         }

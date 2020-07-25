@@ -1,127 +1,25 @@
 
 window.onload = function () {
 
-    var game, config;
 
-    var _gW = 0, _gH = 0;
+    class SceneA extends Phaser.Scene {
 
-    var form = document.getElementById ('myForm');
-    form.onsubmit = function ( e ) {
-
-        e.preventDefault();
-
-        document.getElementById('game_login').style.display = 'none';
-        document.getElementById('game_div').style.display = 'block';
-        
-        enterGame ();
-        
-    }
-
-    readDeviceOrientation();
-
-    this.addEventListener("orientationchange", function() {
-        readDeviceOrientation()
-    });
-
-    function readDeviceOrientation () {
-
-
-        if ( window.orientation == undefined  ) return;
-
-        var landscape = Math.abs ( window.orientation) == 0;
-
-        var btn_enter =  document.getElementById('btnEnter');
-
-        btn_enter.disabled = ( landscape ) ? true : false; 
-
-        var message_div =  document.getElementById('messageDiv');
-
-        message_div.innerHTML = ( !landscape ) ? '' : '<small>Please set device orientation to landscape.</small>';
-
-    }
-
-    function enterGame () {
-
-        var maxW = 1280;
-
-        var container = document.getElementById('game_container');
-
-        var contW = container.clientWidth,
-            contH = container.clientHeight;
-
-        var tmpWidth = contW > maxW ? maxW : contW,
-            tmpHeight = Math.ceil(tmpWidth * 9/16);
-
-        if ( tmpHeight >= contH ) {
-
-            _gH = contH;
-            _gW = Math.ceil(_gH * 16/9);
-            console.log ( 'game dimensions adjusted by screen height' )
-
-        }else {
-
-            _gW = tmpWidth;
-            _gH = tmpHeight;
-            console.log ( 'game dimensions adjusted by screen width' )
+        constructor ()
+        {
+            super('SceneA');
         }
-
-        console.log ( _gW, _gH );
-
-        _scale = _gW / maxW;
-
-        
-        var game_div = document.getElementById('game_div');
-        game_div.style.width = _gW + 'px';
-        game_div.style.height = _gH + 'px';
-     
-
-        config = {
-
-            type: Phaser.AUTO,
-            width: _gW,
-            height: _gH,
-            backgroundColor: '#dedede',
-            audio: {
-                disableWebAudio: false
-            },
-            parent:'game_div',
-            scene: [ SceneA, SceneB ]
-
-        };
-
-        game = new Phaser.Game(config);
-
-        //socket = io();
-        
-        //socket.emit ('initUser', username.value );
-
-    }
-
-
-    var SceneA = new Phaser.Class({
-
-        Extends: Phaser.Scene,
-
-        initialize:
-
-        function SceneA ()
-        {
-            Phaser.Scene.call(this, { key: 'sceneA' });
-        },
-
-        preload: function ()
+        preload ()
         {
 
-          
             this.load.audioSprite('sfx', 'client/assets/sfx/fx_mixdown.json', [
                 'client/assets/sfx/sfx.ogg',
                 'client/assets/sfx/sfx.mp3'
             ]);
-            
+
             this.load.audio ('bgsound2', ['client/assets/sfx/bgsound.ogg', 'client/assets/sfx/bgsound.mp3'] );
 
             this.load.audio ('bgsound', ['client/assets/sfx/bgsound2.ogg', 'client/assets/sfx/bgsound2.mp3'] );
-            
+
             this.load.image('bg', 'client/assets/images/bg.png');
 
             this.load.image('title', 'client/assets/images/title.png');
@@ -136,82 +34,84 @@ window.onload = function () {
 
             this.load.spritesheet('people', 'client/assets/images/people.png', { frameWidth: 100, frameHeight: 135 });
 
-          
-            var rctW = _gW * 0.25, 
-                rctH = 20 * _scale,
-                rctX = (_gW - rctW )/2,
-                rctY = _gH * 0.52;
-        
-            var txtConfig = {
+
+            const txtConfig = {
                 color : "#333",
-                fontSize : 30 * _scale,
+                fontSize : 26,
                 fontFamily : 'Oswald'
             }
 
-            this.loadtxt = this.add.text ( _gW/2, _gH * 0.48, 'Loading Files..', txtConfig ) .setOrigin(0.5);
-            
-            this.loadrect = this.add.rectangle ( rctX, rctY, rctW * 0.02, rctH, 0xff6666, 1 ).setOrigin(0);
+            let loadtxt = this.add.text ( _gW/2, 330, 'Loading Files..', txtConfig ) .setOrigin(0.5);
 
-            var smtxt = this.add.text (_gW/2, _gH*0.9, '@chalnicol', { color:'gray', fontSize: 15 *_scale, fontFamily:'Oswald'} ).setOrigin(0.5);
+            const rctW = 400, rctH = 30,
+                  rctX = (_gW - rctW )/2,
+                  rctY = _gH * 0.52;
+
+
+            let loadrect = this.add.rectangle ( rctX, rctY, rctW * 0.02, rctH, 0xff6666, 1 ).setOrigin(0, 0.5 );
+
+            let loadbrect = this.add.rectangle ( (_gW - (rctW+10) )/2, rctY, rctW + 10, rctH + 10 ).setStrokeStyle ( 3, 0x3a3a3a ).setOrigin (0, 0.5);
+
+            let smtxt = this.add.text (_gW/2, _gH*0.9, 'Chalnicol Studio® 2020', { color:'gray', fontSize: 20 *_scale, fontFamily:'Oswald'} ).setOrigin(0.5);
 
             //...
             this.load.on('progress', function (value) {
 
-                var perc = Math.floor ( value * 100 );
-                
-                this.loadtxt.text = 'Loading Files.. ' + perc + '%';
-                
-                this.loadrect.width = rctW * value;
+                let perc = Math.floor ( value * 100 );
+
+                loadtxt.text = 'Loading Files.. ' + perc + '%';
+
+                loadrect.width = rctW * value;
 
             }, this );
 
             this.load.on('complete', function () {
-                this.loadtxt.destroy();
-                this.loadrect.destroy();
+                loadtxt.destroy();
+                loadrect.destroy();
             }, this );
 
-        },
-        create :  function () {
-
+        }
+        create ()
+        {
             this.initMenuSound ();
+
             this.initMenuInterface ();
-
-        },
-        initMenuSound : function () {
-
-
-            this.bgmusic = this.sound.add('bgsound2').setVolume(0.2).setLoop(true);
+        }
+        initMenuSound ()
+        {
+            this.bgmusic = this.sound.add('bgsound2').setVolume(0.1).setLoop(true);
             this.bgmusic.play();
 
-            this.music = this.sound.addAudioSprite('sfx');
+            this.gameSound = this.sound.addAudioSprite('sfx');
+        }
+        initMenuInterface ()
+        {
 
-        },
-        initMenuInterface : function () {
+            this.add.image ( _gW/2, _gH/2,'bg' ).setScale(_scale );
 
-            var bg = this.add.image ( _gW/2, _gH/2,'bg' ).setScale(_scale );
-
-
-            var title = this.add.image ( _gW/2, -_gH/2,'title' ).setScale(_scale );
+            let title = this.add.image ( _gW/2, -_gH/2,'title' ).setScale(_scale );
 
             this.tweens.add ({
-                targets : title,
-                y : _gH/2,
-                rotation : 0,
-                duration : 300,
-                ease : 'Power2'
+              targets : title,
+              y : _gH/2,
+              rotation : 0,
+              duration : 300,
+              ease : 'Power2',
+              onStartScope: this,
+              onStart: function () {
+                this.gameSound.play ('move')
+              }
             });
-            this.music.play ('move')
 
-            var bz = 255 * _scale,
-                bs = bz * 0.2,
-                bx = (_gW - ( (2 * bz) + bs ))/2 + bz/2,
-                by = 440 * _scale;
+            let bz = 255, bs = bz * 0.2,
+                bx = (_gW - ( ( 2 * bz ) + bs ))/2 + bz/2,
+                by = 440;
 
-            for ( var i = 0; i < 2; i++ ) {
+            for ( let i = 0; i < 2; i++ ) {
 
-                var xs = bx + i * ( bz + bs );
+                let xs = bx + i * ( bz + bs );
 
-                var img = this.add.image ( xs + (950 * _scale), by, 'menu_btn', i ).setScale (_scale ).setData('id', i ).setInteractive();
+                let img = this.add.image ( xs + 950, by, 'menu_btn', i ).setData('id', i ).setInteractive();
 
                 img.on ('pointerover', function () {
                     this.setTint (0xcecece);
@@ -223,11 +123,13 @@ window.onload = function () {
                     this.clearTint ();
                 });
                 img.on ('pointerdown', function () {
-                    
-                    var mode = this.getData('id') == 0 ? 'easy' : 'hard';
 
-                    this.scene.music.play('clicka');
-                    this.scene.startGame (mode)
+                    let mode = this.getData('id') == 0 ? 'easy' : 'hard';
+
+                    this.scene.gameSound.play('clicka');
+
+                    this.scene.startGame (mode);
+
                 });
 
                 this.tweens.add ({
@@ -236,48 +138,40 @@ window.onload = function () {
                     duration : 500,
                     easeParams : [ 1, 0.9 ],
                     ease : 'Elastic',
-                    delay : (i * 300) + 300
+                    delay : (i * 300) + 300,
+                    onStartScope: this,
+                    onStart: function () {
+                        this.gameSound.play ('move');
+                    }
                 });
-                this.time.delayedCall ( (i * 300) + 300, function () {
-                    this.music.play ('move');
-                }, [], this );
+
+
             }
 
+        }
+        startGame ( mode ) {
+
             
-            
-          
-           
-        },
-        startGame : function ( data ) {
 
             this.bgmusic.stop();
-            this.scene.start ('sceneB', data );
+
+            this.scene.start ('SceneB', mode );
         }
-        
-    });
 
-    var SceneB = new Phaser.Class({
+    }
 
-        Extends: Phaser.Scene,
+    class SceneB extends Phaser.Scene {
 
-        initialize:
-
-        function SceneB ()
+        constructor ()
         {
-            Phaser.Scene.call(this, { key: 'sceneB' });
-        },
-        preload : function () {
-
-        },
-        create: function ( data ) {
-
-            this.card = {
-                w : 100 * _scale,  h : 135 * _scale,
-            };
-
-            this.crdSpacing = this.card.w * 0.3;
-
+            super('SceneB');
+        }
+        init ( data )
+        {
             this.mode = data;
+        }
+        create ()
+        {
 
             this.isGameOn = false;
 
@@ -286,43 +180,49 @@ window.onload = function () {
             this.initMenuSound ();
 
             this.initCardsHolder ();
-            
+
             this.initControls ();
 
             this.time.delayedCall ( 500, this.initCards, [], this );
 
-        },
-        initMenuSound : function () {
-
+        }
+        initMenuSound ()
+        {
 
             this.bgmusic = this.sound.add('bgsound').setVolume(0.2).setLoop(true);
             this.bgmusic.play();
 
-            this.music = this.sound.addAudioSprite('sfx');
+            this.gameSound = this.sound.addAudioSprite('sfx');
 
-        },
-        initGraphics : function () {
+        }
+        initGraphics ()
+        {
 
             this.isPrompted = false;
 
-            //var bg = this.add.rectangle (0, 0, _gW, _gH, 0x009933, 1 ).setOrigin(0);
-            var bg = this.add.image ( _gW/2, _gH/2,'bg' ).setScale(_scale );
-           
-        },
-        initCardsHolder : function () {
+            this.add.image ( _gW/2, _gH/2,'bg' );
 
+        }
+        initCardsHolder ()
+        {
+
+            this.card = {
+                w : 100 * _scale,  h : 135 * _scale,
+            };
+
+            this.crdSpacing = this.card.w * 0.3;
 
             this.mainContainer = this.add.container ( 0, 0 );
 
-            var padding = 30 * _scale,
-                strk = Math.floor ( 15 * _scale);
+            let padding = 30,
+                strk = 15;
 
-            var cardW = this.card.w, 
+            var cardW = this.card.w,
                 cardH = this.card.h;
 
 
             var initialBox = this.add.container ( padding + cardW/2, padding + cardH/2 ).setSize( cardW, cardH).setInteractive ().setName ('initBox');
-        
+
             var recta = this.add.rectangle ( 0, 0, cardW, cardH, 0xffffff, 0.6 );
 
             var circlea = this.add.circle ( 0, 0, cardW * 0.3 ).setStrokeStyle ( strk, 0xff0000 );
@@ -330,17 +230,16 @@ window.onload = function () {
             initialBox.add ([ recta, circlea ]);
 
             initialBox.on ('pointerdown', function () {
-                this.disableInteractive ();
-                this.scene.initialBoxClick ();
-            });
+                this.initialBoxClick ();
+            }, this);
 
             this.mainContainer.add ( initialBox );
 
-                
+
             //homeContainers...
             var spcng = 10 * _scale;
 
-            var stx = _gW - ( (4 * (cardW + spcng)) - spcng ) - padding + (cardW/2), 
+            var stx = _gW - ( (4 * (cardW + spcng)) - spcng ) - padding + (cardW/2),
                 sty = padding + (cardH/2);
 
             for ( var i = 0; i < 4; i++ ) {
@@ -349,7 +248,7 @@ window.onload = function () {
                     ys = sty;
 
                 var homeContainer = this.add.container ( xs, ys ).setData( { 'resided' : false, 'kind' : -1, topVal : -1 } ).setName ('home' + i );
-                
+
                 var rectb = this.add.rectangle ( 0, 0, cardW, cardH, 0xffffff, 0.6 )
 
                 var circleb = this.add.circle ( 0, 0, cardW * 0.3 ).setStrokeStyle ( strk, 0x33ffff );
@@ -364,7 +263,7 @@ window.onload = function () {
 
             var fw = _gW - ( 2 * padding ),
                 fs = ( fw - (7 * cardW ) ) / 6,
-                fx = padding + (cardW/2), 
+                fx = padding + (cardW/2),
                 fy = (200 * _scale) + cardH/2;
 
             for ( var i = 0; i < 7; i++ ) {
@@ -372,7 +271,7 @@ window.onload = function () {
                 var xp = fx + i * (cardW + fs),
                     yp = fy;
 
-                var fieldContainer = this.add.container ( xp, yp ).setName ('field' + i ).setData( {'col':i, spacing:0 });
+                var fieldContainer = this.add.container ( xp, yp ).setName ('field' + i ).setData( {'col': i, 'spacing': 0 });
 
                 var rectc = this.add.rectangle ( 0, 0, cardW, cardH, 0xffffff, 0.6 );
 
@@ -385,8 +284,9 @@ window.onload = function () {
             }
 
 
-        },
-        initControls : function () {
+        }
+        initControls ()
+        {
 
             var xs = 620 * _scale, ys = 30 * _scale + this.card.h/2;
 
@@ -396,7 +296,7 @@ window.onload = function () {
 
             var btnData = [{ 'id':'restart', val:"Play Another Game" }, { 'id':'leave', val:"Leave Game" } ];
 
-            var bw = 270*_scale, 
+            var bw = 270*_scale,
                 bh = 40 * _scale,
                 bs = bh * 0.2,
                 by =  85 *_scale;
@@ -421,7 +321,7 @@ window.onload = function () {
                     this.getAt (0).setFillStyle ( 0xcecece, 1 );
                 });
                 rct.on ('pointerdown', function () {
-                    
+
                     if ( !this.scene.isGameOn ) return;
 
                     this.getAt (0).setFillStyle ( 0xffffff, 1 );
@@ -429,14 +329,14 @@ window.onload = function () {
                     this.scene.playSound ('clicka');
 
                     if ( this.getData('id') == 'restart') {
-                        
+
                         this.scene.restartPrompt ();
 
                     }else {
 
                         this.scene.leavePrompt ();
                     }
-    
+
                 });
 
 
@@ -444,22 +344,22 @@ window.onload = function () {
 
 
 
-        },
-        initCards : function () {
+        }
+        initCards ()
+        {
 
-            var strVal = ['A', '2','3','4','5','6','7','8','9','10','J','Q', 'K' ];
+            let strVal = ['A', '2','3','4','5','6','7','8','9','10','J','Q', 'K' ];
 
-            var rndOrd = this.generateRandomOrder ();
+            let rndOrd = this.generateRandomOrder ();
 
-            
             this.cardContainer = this.add.container( 0, 0 );
 
             this.cardsMoving = false;
-            
+
             this.isGameOn = true;
 
-            this.topCardCount = 0; 
-            
+            this.topCardCount = 0;
+
             this.cardsOutCount = 0;
 
             this.vel = 150;
@@ -543,13 +443,18 @@ window.onload = function () {
 
             this.time.delayedCall ( 50, function () {
                 this.playSound ('ending');
-            }, [], this); 
+            }, [], this);
             //...
 
-        },
-        initialBoxClick : function () {
+        }
+        initialBoxClick ()
+        {
 
             this.playSound ('clickb');
+
+            let box = this.mainContainer.getByName ('initBox');
+
+            box.disableInteractive ();
 
             var openX = 200 * _scale ;
 
@@ -570,7 +475,7 @@ window.onload = function () {
                     var card = this.initialCards [ cnt ];
 
                     this.cardContainer.bringToTop ( card );
-        
+
                     card.flip().enabled();
 
                     this.tweens.add ({
@@ -579,13 +484,13 @@ window.onload = function () {
                         duration : 200,
                         ease : 'Power3',
                     });
-                    
+
                     this.topCardCount += 1;
 
                     if ( this.cardsOutCount < 4 ) this.cardsOutCount += 1;
 
                     if ( this.cardsOutCount >= 4 ) {
-                        
+
                         //console.log ( 'move' );
                         this.cardsOutCount = 3;
 
@@ -609,11 +514,11 @@ window.onload = function () {
 
                     }
 
-                    
+
 
                 }else {
 
-                    
+
                     for ( var j = 0; j < this.topCardCount; j++ ) {
 
                         var last = this.initialCards.length - 1;
@@ -634,7 +539,7 @@ window.onload = function () {
                         var card = this.initialCards [ cnt ];
 
                         this.cardContainer.bringToTop ( card );
-        
+
                         this.tweens.add ({
                             targets: card,
                             x : openX + i * ( card.width * 0.3 ),
@@ -643,7 +548,7 @@ window.onload = function () {
                         });
 
                         card.flip();
-             
+
                         this.topCardCount += 1;
 
                     }
@@ -651,14 +556,14 @@ window.onload = function () {
                     card.enabled ();
 
                 }
-                
+
                 this.time.delayedCall ( 400 , function () {
-                    this.mainContainer.getByName ('initBox').setInteractive ();
+                    box.setInteractive ();
                 }, [], this);
 
             }else {
 
-                
+
                 var initBox = this.mainContainer.getByName ('initBox');
 
                 for ( var i in this.initialCards ) {
@@ -679,8 +584,9 @@ window.onload = function () {
                 }, [], this);
 
             }
-        },
-        cardClick : function ( id ) {
+        }
+        cardClick ( id )
+        {
 
             if ( this.cardsMoving || !this.isGameOn ) return;
 
@@ -692,7 +598,7 @@ window.onload = function () {
             var homePost = this.getHomePosition ( cardData );
 
             //or get field position if available
-            var newPost = this.getFieldPosition ( cardData ); 
+            var newPost = this.getFieldPosition ( cardData );
 
 
             if ( homePost != null ) {
@@ -708,7 +614,7 @@ window.onload = function () {
                 this.tweens.add ({
                     targets : card,
                     x : home.x,
-                    y : home.y, 
+                    y : home.y,
                     duration : 100,
                     ease : "Quad.easeIn"
                 });
@@ -720,14 +626,14 @@ window.onload = function () {
                 this.resultAction ( cardData );
 
                 this.sendHomers ();
-                    
+
             }
             else if ( newPost != null ) {
 
                 this.playSound ('clickb');
 
                  //check if card is being overlapped if at field..
-                var crdIsOverlapped = this.getCardIsAtBottom( cardData ) 
+                var crdIsOverlapped = this.getCardIsAtBottom( cardData )
 
                 if ( !crdIsOverlapped ) {
 
@@ -736,7 +642,7 @@ window.onload = function () {
                     this.tweens.add ({
                         targets : card,
                         x : newPost.x,
-                        y : newPost.y, 
+                        y : newPost.y,
                         duration : 100,
                         ease : "Quad.easeIn"
                     });
@@ -745,7 +651,7 @@ window.onload = function () {
 
                     this.fieldedCards [ newPost.col ].push ( card );
 
-                    
+
                 }else {
 
                     var initRow = card.row, initCol = card.col;
@@ -761,7 +667,7 @@ window.onload = function () {
                         this.tweens.add ({
                             targets : crd,
                             x : newPost.x,
-                            y : newPost.y + (i * this.crdSpacing ), 
+                            y : newPost.y + (i * this.crdSpacing ),
                             duration : 100,
                             ease : "Quad.easeIn"
                         });
@@ -770,7 +676,7 @@ window.onload = function () {
                         crd.setPost ( newPost.col, newPost.row + i );
 
                         this.fieldedCards [newPost.col].push ( crd );
-                        
+
                     }
 
                     this.fieldedCards[initCol].splice ( initRow );
@@ -780,29 +686,31 @@ window.onload = function () {
                 this.resultAction ( cardData, crdIsOverlapped );
 
                 if ( cardData.currentPost != 'home' ) this.sendHomers ();
-                
+
             }
             else {
-                
+
                 this.playSound ('error');
             }
-            
-        },
-        getCardDataForAction : function ( crd ) {
+
+        }
+        getCardDataForAction ( crd )
+        {
 
            return {
                id : crd.id,
-               knd : crd.knd, 
+               knd : crd.knd,
                clr : crd.clr,
-               row : crd.row, 
+               row : crd.row,
                col : crd.col,
-               val : crd.val, 
+               val : crd.val,
                home : crd.home,
                currentPost : crd.currentPost
            }
-            
-        },
-        resultAction : function ( data, isOverlapped = false ) {
+
+        }
+        resultAction ( data, isOverlapped = false )
+        {
 
 
             switch ( data.currentPost ) {
@@ -812,24 +720,24 @@ window.onload = function () {
                     var index = this.getInitIndex ( data.id );
 
                     this.initialCards.splice ( index, 1 );
-    
+
                     if ( index != this.initialCards.length ) {
                         this.initialCards [index].enabled ();
                     }
-                    
+
                     this.topCardCount += -1;
-                    
+
                     if ( this.mode == 'easy' ) {
-    
+
                         if ( this.topCardCount <= 0 ) {
-    
+
                             this.cardsOutCount = 0;
-    
+
                         }else {
-    
+
                             if ( this.cardsOutCount > 1 )  this.cardsOutCount += -1;
                         }
-    
+
                     }
 
                 break;
@@ -843,11 +751,11 @@ window.onload = function () {
                         var newLast = this.fieldedCards [ data.col ].length - 1;
 
                         this.fieldedCards [ data.col ] [newLast].flip ().enabled();
-                    }   
+                    }
 
                 break;
 
-                case "home" : 
+                case "home" :
 
                     var home = this.mainContainer.getByName ('home' + data.home ) ;
 
@@ -855,17 +763,19 @@ window.onload = function () {
 
                 break;
             }
-            
-            
-        },
-        getCardIsAtBottom : function ( data ) {
+
+
+        }
+        getCardIsAtBottom ( data )
+        {
 
             if ( data.currentPost == 'field' ) {
                 if ( this.fieldedCards [ data.col ].length - 1 != data.row ) return true;
             }
             return false;
-        },
-        getInitIndex : function ( id, origin='' ) {
+        }
+        getInitIndex ( id, origin='' )
+        {
 
             if ( origin == '' ) {
 
@@ -881,8 +791,9 @@ window.onload = function () {
 
             return null;
 
-        },
-        getFieldPosition : function ( data ) {
+        }
+        getFieldPosition ( data )
+        {
 
             var clr = data.clr,
                 val = data.val,
@@ -896,8 +807,8 @@ window.onload = function () {
 
                         if ( this.fieldedCards [i].length == 0 ) {
 
-                            return { 
-                                'x' : this.mainContainer.getByName('field' + i ).x, 
+                            return {
+                                'x' : this.mainContainer.getByName('field' + i ).x,
                                 'y' : this.mainContainer.getByName('field' + i ).y,
                                 'col' : i, 'row' : 0
                             }
@@ -911,32 +822,33 @@ window.onload = function () {
                         if ( this.fieldedCards[i].length > 0 ) {
 
                             var last = this.fieldedCards[i].length - 1;
-        
+
                             var lastCard = this.fieldedCards [i] [last];
-            
+
                             if ( i != data.col ) {
-            
+
                                 if ( lastCard.clr != data.clr && lastCard.val == ( data.val + 1 ) ) {
-            
-                                    return { 
+
+                                    return {
                                         'x' : lastCard.x, 'y' : lastCard.y + this.crdSpacing,
                                         'col' : lastCard.col,
                                         'row' : lastCard.row + 1
                                     }
-        
+
                                 }
                             }
 
                         }
-                    
+
                     }
 
                 }
             }
             return null;
 
-        },
-        getHomePosition : function ( data ) {
+        }
+        getHomePosition ( data )
+        {
 
             var isBottom = this.getCardIsAtBottom ( data );
 
@@ -945,22 +857,23 @@ window.onload = function () {
                 for ( var i = 0; i < 4; i++ ) {
 
                     var home = this.mainContainer.getByName ('home' + i);
-    
+
                     if ( data.val == 0 && data.currentPost != 'home' && !home.getData('resided') ) {
 
                         home.setData ('resided', true );
 
                         return i;
                     }
-                    
+
                     if ((data.val - 1) == home.getData('topVal') && data.knd == home.getData ('knd')  ) return i;
-    
+
                 }
             }
             return null;
 
-        },
-        generateRandomOrder : function () {
+        }
+        generateRandomOrder ()
+        {
 
             var tempArr = [];
 
@@ -981,8 +894,9 @@ window.onload = function () {
 
             return finArr;
 
-        },
-        sendHomers : function () {
+        }
+        sendHomers ()
+        {
 
             var vel = this.vel;
 
@@ -1002,7 +916,7 @@ window.onload = function () {
                         var cnt = this.initialCards.length - this.topCardCount ;
 
                         var crd = this.initialCards [ cnt ];
-        
+
                     }else {
 
                         var col = homers [i].col;
@@ -1012,7 +926,7 @@ window.onload = function () {
                         var crd = this.fieldedCards [col][last];
 
                     }
-                    
+
                     var cardData = this.getCardDataForAction ( crd );
 
                     this.cardContainer.bringToTop ( crd );
@@ -1024,7 +938,7 @@ window.onload = function () {
                     this.tweens.add ({
                         targets : crd,
                         x : hme.x,
-                        y : hme.y, 
+                        y : hme.y,
                         duration : vel,
                         ease : "Quad.easeIn",
                         delay : (i * vel)
@@ -1033,14 +947,14 @@ window.onload = function () {
                     crd.setHome ( homers[i].home );
 
                     this.resultAction ( cardData );
-                   
-                } 
+
+                }
 
                 this.time.delayedCall ( ( homers.length * vel ), function () {
                     this.playSound ('flick');
                     this.sendHomers();
                 }, [], this );
-               
+
                 this.vel *= 0.9;
 
             }else {
@@ -1058,9 +972,10 @@ window.onload = function () {
                 }, [], this );
 
             }
-            
-        },
-        checkColumnLength: function () {
+
+        }
+        checkColumnLength ()
+        {
 
             for ( var i in this.fieldedCards ) {
 
@@ -1082,7 +997,7 @@ window.onload = function () {
                     }
 
                     field.setData ('spacing', 1 );
-                    
+
                 }else {
 
                     if ( field.getData('spacing') != 0 ) {
@@ -1100,8 +1015,9 @@ window.onload = function () {
                 }
 
             }
-        },
-        getHomers : function () {
+        }
+        getHomers ()
+        {
 
             var tmp = [];
 
@@ -1112,13 +1028,13 @@ window.onload = function () {
                     var last = this.fieldedCards [i].length - 1;
 
                     var crd = this.fieldedCards [i][last];
-                        
+
                     var hme = this.getHomePosition ( crd );
 
                     if (  hme != null ) tmp.push ( { 'origin' :'field', 'col' : i, 'home' : hme } );
 
                 }
-                
+
             }
 
             if ( this.topCardCount > 0 ) {
@@ -1136,8 +1052,9 @@ window.onload = function () {
 
             return tmp;
 
-        },
-        isWinner : function () {
+        }
+        isWinner ()
+        {
 
             for ( var i = 0; i < 4; i++ ) {
 
@@ -1148,8 +1065,9 @@ window.onload = function () {
 
             return true;
 
-        },
-        showPrompt : function ( txt, btnData ) {
+        }
+        showPrompt ( txt, btnData )
+        {
 
             this.isPrompted = true;
 
@@ -1209,8 +1127,9 @@ window.onload = function () {
             return arr;
 
 
-        },
-        restartPrompt : function () {
+        }
+        restartPrompt ()
+        {
 
             var btnData = [
                 { 'id': 'restart', 'val': 'Yes' },
@@ -1227,11 +1146,12 @@ window.onload = function () {
                 this.scene.playSound ('clicka');
                 this.scene.removePrompt ();
             });
-            
-            
 
-        },
-        leavePrompt : function () {
+
+
+        }
+        leavePrompt ()
+        {
 
             var btnData = [
                 { 'id': 'leave', 'val': 'Yes' },
@@ -1250,8 +1170,9 @@ window.onload = function () {
             });
 
             //..
-        },
-        winPrompt : function () {
+        }
+        winPrompt ()
+        {
 
             var btnData = [
                 { 'id': 'restart', 'val': 'Play Again' },
@@ -1270,8 +1191,9 @@ window.onload = function () {
             });
 
             //..
-        },
-        removePrompt : function () {
+        }
+        removePrompt ()
+        {
 
             if ( !this.isPrompted ) return;
 
@@ -1281,8 +1203,9 @@ window.onload = function () {
 
             this.bgRect.destroy ();
 
-        },
-        endGame : function () {
+        }
+        endGame ()
+        {
 
             this.isGameOn = false;
 
@@ -1290,10 +1213,11 @@ window.onload = function () {
 
             this.winPrompt ();
 
-            
 
-        },
-        resetGame : function () {
+
+        }
+        resetGame ()
+        {
 
             this.removePrompt ();
 
@@ -1310,40 +1234,31 @@ window.onload = function () {
             this.time.delayedCall ( 300, this.initCards, [], this );
 
             //this.initCards ();
-        },
-        leaveGame : function () {
+        }
+        leaveGame ()
+        {
 
             console.log ('todo exit');
             this.bgmusic.stop ();
             this.scene.start ('sceneA');
 
-        },
-        playSound : function ( snd, vol=0.5) {
-            this.music.play ( snd, { volume : vol });
+        }
+        playSound ( snd, vol=0.5 )
+        {
+            this.gameSound.play ( snd, { volume : vol });
         }
 
-    });
+    };
 
+    class Card extends Phaser.GameObjects.Container {
 
-    // Container Class..
-    var Card =  new Phaser.Class({
-
-        Extends: Phaser.GameObjects.Container,
-
-        initialize:
-
-        function Card ( scene, id, x, y, width, height, knd, val, strVal, isFlipped )
+        constructor ( scene, id, x, y, width, height, knd, val, strVal, isFlipped )
         {
 
-            Phaser.GameObjects.Container.call( this, scene )
+            super ( scene, x, y );
 
-            this.setPosition(x, y).setSize( width, height).setName ( id );
+            this.setSize ( width, height ).setName (id);
 
-            this.id = id;
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
             this.clr = knd < 2 ? 0 : 1,
             this.knd = knd;
             this.val = val;
@@ -1355,56 +1270,53 @@ window.onload = function () {
             this.col = -1;
             this.home = 0;
 
+            let cardbg = scene.add.image ( 0, 0, 'card', isFlipped ? 0 : 1 ).setScale (_scale );
 
-            var cardbg = scene.add.image ( 0, 0, 'card', isFlipped ? 0 : 1 ).setScale (_scale );
-
-            var txtConfig = { 
-                fontSize: height*0.25, 
-                fontFamily:'Oswald', 
-                color : this.clr == 0 ? 'black' : 'red' 
+            let txtConfig = {
+                fontSize: height*0.25,
+                fontFamily:'Oswald',
+                color : this.clr == 0 ? 'black' : 'red'
             };
 
-
-            var frame = 0;
+            let frame = 0;
 
             if ( val >= 10 ) {
-                frame = this.clr == 0 ? val - 9 : (val - 9) + 4; 
+                frame = this.clr == 0 ? val - 9 : (val - 9) + 4;
             }
 
-           
+            let txt = scene.add.text ( -width *0.3, -height*0.32, strVal, txtConfig ).setOrigin (0.5).setVisible (isFlipped);
 
-            var txt = scene.add.text ( -width *0.3, -height*0.32, strVal, txtConfig ).setOrigin (0.5).setVisible (isFlipped);
+            let kind_sm = scene.add.sprite ( -width *0.3 , -height*0.07, 'kinds', knd ).setScale ( width*0.3/100 ).setVisible (isFlipped);
 
-            var kind_sm = scene.add.sprite ( -width *0.3 , -height*0.07, 'kinds', knd ).setScale ( width*0.3/100 ).setVisible (isFlipped);
+            let kind_lg = scene.add.sprite ( width* 0.13, height*0.2, 'kinds', knd ).setScale ( width*0.85/100 ).setVisible (isFlipped).setAlpha ( val > 9 ? 0.3 : 1 );
 
-            var kind_lg = scene.add.sprite ( width* 0.13, height*0.2, 'kinds', knd ).setScale ( width*0.85/100 ).setVisible (isFlipped).setAlpha ( val > 9 ? 0.3 : 1 );
+            let txte = scene.add.text ( width *0.3, -height*0.4, strVal, txtConfig ).setOrigin (1, 0.5).setFontSize ( height * 0.12 ).setVisible (isFlipped);
 
-            var txte = scene.add.text ( width *0.3, -height*0.4, strVal, txtConfig ).setOrigin (1, 0.5).setFontSize ( height * 0.12 ).setVisible (isFlipped);
+            let kind_xs = scene.add.image (width *0.45, -height*0.4 , 'kinds_sm', knd ).setOrigin (1, 0.5).setScale (width*0.18/25).setVisible (isFlipped);
 
-            var kind_xs = scene.add.image (width *0.45, -height*0.4 , 'kinds_sm', knd ).setOrigin (1, 0.5).setScale (width*0.18/25).setVisible (isFlipped);
-
-            var img  = scene.add.sprite ( 0,0, 'people', frame ).setScale ( _scale ).setVisible (isFlipped);
+            let img  = scene.add.sprite ( 0,0, 'people', frame ).setScale ( _scale ).setVisible (isFlipped);
 
             this.add ( [ cardbg, txt, kind_sm, kind_lg, txte, kind_xs, img ] );
 
-            scene.children.add ( this );
+            scene.add.existing(this);
 
-        },
-
-        flip: function ( state = 'up' ) {
+        }
+        flip ( state = 'up' )
+        {
 
             var isUp = state == 'up';
 
             this.getAt ( 0 ).setFrame ( isUp ? 0 : 1 );
-            
+
             for ( var i = 0; i < 6; i++) {
                 this.getAt ( i + 1 ).setVisible ( isUp );
-            }   
-            
+            }
+
             return this;
 
-        },
-        enabled : function ( state = true ) {
+        }
+        enabled ( state = true )
+        {
 
             this.isEnabled = state;
 
@@ -1415,17 +1327,19 @@ window.onload = function () {
             }
             return this;
 
-        },
-        setPost : function ( col=0, row=0 ) {
+        }
+        setPost ( col=0, row=0 )
+        {
 
-            this.currentPost = 'field'; 
+            this.currentPost = 'field';
 
             this.col = col;
             this.row = row;
-            
+
             return this;
-        },
-        setHome : function ( nmbr ) {
+        }
+        setHome ( nmbr )
+        {
 
             this.col = 100;
             this.row = 100;
@@ -1433,7 +1347,25 @@ window.onload = function () {
             this.currentPost = 'home';
             this.home = nmbr;
         }
-   
-    });
 
-} 
+    }
+
+    const _gW = 1280, _gH = 720; _scale = 1;
+
+    const config = {
+        type: Phaser.AUTO,
+        scale: {
+            mode: Phaser.Scale.FIT,
+            parent: 'game-div',
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+            width: _gW,
+            height: _gH
+        },
+        backgroundColor: '#f5f5f5',
+        scene: [ SceneA, SceneB ]
+    };
+
+    const game = new Phaser.Game(config);
+
+
+}

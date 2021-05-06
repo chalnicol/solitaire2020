@@ -22,7 +22,7 @@ class Preloader extends Phaser.Scene {
         let rct = this.add.rectangle ( (_gW - rW)/2, _gH/2, 5, rH, 0x6a6a6a, 1 ).setOrigin(0, 0.5);
 
         this.load.on ('complete', function () {
-            this.scene.start('SceneA');
+           // this.scene.start('SceneA');
         }, this);
 
         this.load.on ('progress', function (progress) {
@@ -34,14 +34,14 @@ class Preloader extends Phaser.Scene {
         });
 
         
-        this.load.audioSprite('sfx', 'client/assets/sfx/fx_mixdown.json', [
-            'client/assets/sfx/sfx.ogg',
-            'client/assets/sfx/sfx.mp3'
-        ]);
+        // this.load.audioSprite('sfx', 'client/assets/sfx/fx_mixdown.json', [
+        //     'client/assets/sfx/sfx.ogg',
+        //     'client/assets/sfx/sfx.mp3'
+        // ]);
         
-        this.load.audio ('properBg', ['client/assets/sfx/starcommander.ogg', 'client/assets/sfx/starcommander.mp3'] );
+        // this.load.audio ('properBg', ['client/assets/sfx/starcommander.ogg', 'client/assets/sfx/starcommander.mp3'] );
 
-        this.load.audio ('introBg', ['client/assets/sfx/lounge.ogg', 'client/assets/sfx/lounge.mp3'] );
+        // this.load.audio ('introBg', ['client/assets/sfx/lounge.ogg', 'client/assets/sfx/lounge.mp3'] );
         
         this.load.spritesheet('kinds', 'client/assets/images/kinds.png', { frameWidth: 100, frameHeight: 100 });
 
@@ -53,6 +53,12 @@ class Preloader extends Phaser.Scene {
 
         this.load.spritesheet('people', 'client/assets/images/people.png', { frameWidth: 100, frameHeight: 135 });
 
+    }
+
+    create () {
+
+        this.add.text (960, 540, 'CHalnicol', { fontSize:40, fontFamily:'Oswald', color:'#333'});
+        
     }
     
 }

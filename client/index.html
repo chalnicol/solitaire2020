@@ -6,7 +6,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1.0, user-scalable=0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	
-
 	<meta property="og:title" content="Solitaire" />
 	<meta property="og:type" content="Mobile and PC Games" />
 	<meta property="og:image" content="client/assets/images/icons/logo.png" />
@@ -17,11 +16,27 @@
 	<link rel="shortcut icon" href="client/assets/images/icons/sv_icon.ico">
 	<link rel="apple-touch-icon" href="client/assets/images/icons/sv_icon.png">
 
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	
+	<script src="//cdn.jsdelivr.net/npm/phaser@3.23.0/dist/phaser.min.js"></script>
 
-	<script src="client/assets/js/phaser/phaser.min.js"></script>
+	<script src="client/assets/js/buttons.js"></script>
 
+	<script src="client/assets/js/card.js"></script>
+
+	<script src="client/assets/js/cardbox.js"></script>
+
+	<script src="client/assets/js/fieldbox.js"></script>
+
+	<script src="client/assets/js/homebox.js"></script>
+
+	<script src="client/assets/js/preloader.js"></script>
+
+	<script src="client/assets/js/scenea.js"></script>
+
+	<script src="client/assets/js/sceneb.js"></script>
+	
 	<script src="client/assets/js/main.js"></script>
+
 
 	<style>
 
@@ -74,26 +89,6 @@
 
 </head>
 <body>
-	<div id="game_container">
-
-		<div id="game_login">
-
-			<form id="myForm">
-
-				<label for=""><strong>Welcome to Solitaire</strong></label>
-
-				<div class="mt-2">
-					<input type="submit" value="Enter" class="btn btn-secondary btn-block" id="btnEnter">
-				</div>
-			
-				<div id="messageDiv" class="text-danger"></div>
-				
-			</form>
-
-		</div>
-
-		<div id="game_div" style="display: none"></div>
-	
-	</div>
+	<div id="game_div"></div>
 </body>
 </html>

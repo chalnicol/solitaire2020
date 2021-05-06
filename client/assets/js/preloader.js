@@ -22,7 +22,7 @@ class Preloader extends Phaser.Scene {
         let rct = this.add.rectangle ( (_gW - rW)/2, _gH/2, 5, rH, 0x6a6a6a, 1 ).setOrigin(0, 0.5);
 
         this.load.on ('complete', function () {
-           // this.scene.start('SceneA');
+            this.scene.start('SceneA');
         }, this);
 
         this.load.on ('progress', function (progress) {
@@ -53,12 +53,6 @@ class Preloader extends Phaser.Scene {
 
         this.load.spritesheet('people', 'client/assets/images/people.png', { frameWidth: 100, frameHeight: 135 });
 
-    }
-
-    create () {
-
-        this.add.text (960, 540, 'CHalnicol', { fontSize:40, fontFamily:'Oswald', color:'#333'});
-        
     }
     
 }

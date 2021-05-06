@@ -12,7 +12,7 @@ class SceneA extends Phaser.Scene {
 
         this.mode = 0;
 
-        this.initMenuSound ();
+       // this.initMenuSound ();
 
         this.initMenuInterface ();
 
@@ -67,7 +67,7 @@ class SceneA extends Phaser.Scene {
 
     startGame () 
     {
-        this.bgmusic.stop();
+        //this.bgmusic.stop();
         
         this.scene.start ('SceneB', { 'mode' : this.mode });
     }

@@ -39,11 +39,10 @@ class Preloader extends Phaser.Scene {
             'client/assets/sfx/sfx.mp3'
         ]);
         
-        this.load.audio ('bgsound2', ['client/assets/sfx/bgsound.ogg', 'client/assets/sfx/bgsound.mp3'] );
+        this.load.audio ('properBg', ['client/assets/sfx/starcommander.ogg', 'client/assets/sfx/starcommander.mp3'] );
 
-        this.load.audio ('bgsound', ['client/assets/sfx/bgsound2.ogg', 'client/assets/sfx/bgsound2.mp3'] );
+        this.load.audio ('introBg', ['client/assets/sfx/lounge.ogg', 'client/assets/sfx/lounge.mp3'] );
         
-
 
         this.load.spritesheet('kinds', 'client/assets/images/kinds.png', { frameWidth: 100, frameHeight: 100 });
 

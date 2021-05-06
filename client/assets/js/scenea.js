@@ -12,6 +12,8 @@ class SceneA extends Phaser.Scene {
 
         this.mode = 0;
 
+        this.initMenuSound ();
+
         this.initMenuInterface ();
 
     }
@@ -24,7 +26,7 @@ class SceneA extends Phaser.Scene {
     initMenuSound () 
     {
 
-        this.bgmusic = this.sound.add('bgsound').setVolume(0.2).setLoop(true);
+        this.bgmusic = this.sound.add('introBg').setVolume(0.2).setLoop(true);
         this.bgmusic.play();
 
         this.soundFx = this.sound.addAudioSprite('sfx');
@@ -65,6 +67,8 @@ class SceneA extends Phaser.Scene {
 
     startGame () 
     {
+        this.bgmusic.stop();
+        
         this.scene.start ('SceneB', { 'mode' : this.mode });
     }
 

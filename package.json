@@ -1,26 +1,19 @@
 {
-  "name": "solitaire",
+  "name": "solitaire2020",
   "version": "1.0.0",
+  "description": "",
   "main": "app.js",
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^4.17.1"
-  },
-  "engines": {
-    "node": "^12.1.0"
-  },
-  "devDependencies": {},
   "scripts": {
-    "start": "node app.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/chalnicol/solitaire2020.git"
   },
+  "author": "",
+  "license": "ISC",
   "bugs": {
     "url": "https://github.com/chalnicol/solitaire2020/issues"
   },
-  "homepage": "https://github.com/chalnicol/solitaire2020#readme",
-  "description": ""
+  "homepage": "https://github.com/chalnicol/solitaire2020#readme"
 }

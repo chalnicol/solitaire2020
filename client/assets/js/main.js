@@ -17,3 +17,8 @@ window.onload = function () {
     new Phaser.Game(config);
 
 } 
+window.onerror = function ( err ) {
+
+    document.createElement ('div').innerHTML ( err );
+    
+}

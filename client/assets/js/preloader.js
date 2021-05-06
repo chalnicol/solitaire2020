@@ -43,7 +43,6 @@ class Preloader extends Phaser.Scene {
 
         this.load.audio ('introBg', ['client/assets/sfx/lounge.ogg', 'client/assets/sfx/lounge.mp3'] );
         
-
         this.load.spritesheet('kinds', 'client/assets/images/kinds.png', { frameWidth: 100, frameHeight: 100 });
 
         this.load.spritesheet('kinds_sm', 'client/assets/images/kinds_sm.png', { frameWidth: 25, frameHeight: 25 });
@@ -53,7 +52,6 @@ class Preloader extends Phaser.Scene {
         this.load.spritesheet('menu_btn', 'client/assets/images/menu_btn.png', { frameWidth: 255, frameHeight: 255 });
 
         this.load.spritesheet('people', 'client/assets/images/people.png', { frameWidth: 100, frameHeight: 135 });
-
 
     }
     

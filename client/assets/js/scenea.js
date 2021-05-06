@@ -12,7 +12,11 @@ class SceneA extends Phaser.Scene {
 
         this.mode = 0;
 
-       // this.initMenuSound ();
+        this.add.image (960, 540, 'bg');
+
+        this.add.image (960, 540, 'title');
+
+        this.initMenuSound ();
 
         this.initMenuInterface ();
 
@@ -27,6 +31,7 @@ class SceneA extends Phaser.Scene {
     {
 
         this.bgmusic = this.sound.add('introBg').setVolume(0.2).setLoop(true);
+
         this.bgmusic.play();
 
         this.soundFx = this.sound.addAudioSprite('sfx');
@@ -36,23 +41,33 @@ class SceneA extends Phaser.Scene {
     initMenuInterface () 
     {
 
-        
         const but = [ 'easy', 'hard' ];
+
+    
 
         for ( let i = 0; i < 2; i++ ) {
 
+            //var btn = new MyButton (this, 960, 600+ (i*70), 200, 60, 'but'+i, '', '', 0, but[i] );
+            var btn = this.add.image ( 720 + i*450, 650, 'menu', i ).setInteractive();
 
-            var btn = new MyButton (this, 960, 300+ (i*70), 200, 60, 'but'+i, '', '', 0, but[i] );
-
-      
-            btn.on ('pointerdown', function () {
+            btn.on ('pointerover', function () {
                 //..
-                this.first.setFillStyle ( 0xffff00, 1);
+                this.setTint(0xffffcc);
                 
             });
+            btn.on ('pointerout', function () {
+                //..
+                this.clearTint();
+                
+            });
+
+            btn.on ('pointerdown', () => {
+                this.playSound ('clicka');
+            });
+
             btn.on ('pointerup', () => {
 
-                btn.first.setFillStyle ( 0xffffff, 1);
+                btn.clearTint ();
 
                 this.mode = i
 
@@ -60,14 +75,13 @@ class SceneA extends Phaser.Scene {
 
             });
 
-           
         }
 
     }
 
     startGame () 
     {
-        //this.bgmusic.stop();
+        this.bgmusic.stop();
         
         this.scene.start ('SceneB', { 'mode' : this.mode });
     }

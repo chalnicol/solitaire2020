@@ -22,13 +22,26 @@ class SceneB extends Phaser.Scene {
 
         this.isGameOn = false;
 
-        this.add.rectangle ( 960, 540, 1920, 1080, 0x66ff66, 1 );
+        this.add.image ( 960, 540, 'bg');
+
+        this.initMenuSound();
 
         this.initCardsHolder ();
 
         this.initControls();
 
         this.time.delayedCall ( 300, this.initCards, [], this );
+
+    }
+
+    initMenuSound () 
+    {
+
+        this.bgmusic = this.sound.add('properBg').setVolume(0.2).setLoop(true);
+
+        this.bgmusic.play();
+
+        this.soundFx = this.sound.addAudioSprite('sfx');
 
     }
 
@@ -132,6 +145,8 @@ class SceneB extends Phaser.Scene {
             var btn = new MyButton ( this, 0,-15 + i*60, bw, bh, 'btn'+i, '', '', 0, btnData[i].txt );
 
             btn.on ('pointerdown', function () {
+                this.scene.playSound ('clickc');
+
                 this.getAt (0).setFillStyle ( 0xcecece, 1 );
             });
             btn.on ('pointerup', function () {
@@ -242,7 +257,7 @@ class SceneB extends Phaser.Scene {
             }
         }
 
-        //this.playSound ('ending');
+        this.playSound ('ending');
 
     }
 
@@ -377,7 +392,7 @@ class SceneB extends Phaser.Scene {
             }
         }
         
-
+        this.playSound('clickb');
     }
 
     moveCard ( card, post ) {
@@ -411,6 +426,8 @@ class SceneB extends Phaser.Scene {
 
         if ( homePost != null ) {
 
+            this.playSound('clickb');
+
             var home = this.mainContainer.getByName ('home' + homePost );
 
             home.setTopCardValue ( card.val, card.knd );
@@ -426,6 +443,8 @@ class SceneB extends Phaser.Scene {
 
 
         }else if ( fieldPost != null ) {
+
+            this.playSound('clickb');
 
             //check if card is being overlapped if at field..
             var crdIsOverlapped = this.getCardIsAtBottom( card ) 
@@ -469,12 +488,13 @@ class SceneB extends Phaser.Scene {
 
         }else {
 
-            //this.playSound ('error');
+            this.playSound ('error');
 
             console.log ('error..');
 
         }
 
+        //this.playSound('clickb');
 
     }
 
@@ -836,7 +856,7 @@ class SceneB extends Phaser.Scene {
 
     }
 
-    showPrompt  ( txt, btnData ) {
+    showPrompt  ( txt, btnData = [] ) {
 
         this.isPrompted = true;
 
@@ -873,6 +893,9 @@ class SceneB extends Phaser.Scene {
                 btnData [i].func();
             });
             btn.on ('pointerdown', function () {
+
+                this.scene.playSound ('clicka');
+
                 this.getAt (0).setFillStyle ( 0xffff00, 1 );
             });
 
@@ -1009,14 +1032,14 @@ class SceneB extends Phaser.Scene {
 
     leaveGame  () {
 
-        //this.bgmusic.stop ();
+        this.bgmusic.stop ();
 
         this.scene.start ('SceneA');
 
     }
 
     playSound  ( snd, vol=0.5) {
-        //this.music.play ( snd, { volume : vol });
+        this.soundFx.play ( snd, { volume : vol });
     }
 
 

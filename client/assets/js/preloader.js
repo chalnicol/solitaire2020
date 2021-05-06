@@ -7,42 +7,55 @@ class Preloader extends Phaser.Scene {
     preload ()
     {
         
-        let _gW = this.game.config.width,
-            _gH = this.game.config.height;
+         
+        const rW = 510, rH = 30;
 
-        this.add.text ( _gW/2, _gH/2, '', { fontSize: 36, fontFamily:'Oswald', color:'#fff'}).setOrigin(0.5);
+        let preloadCont = this.add.container ( 960, 540 );
 
-        let txt = this.add.text (_gW/2, _gH*0.43, 'Loading : 0%', { color:'#333', fontFamily:'Oswald', fontSize:20 }).setOrigin(0.5);
+        let txta = this.add.text ( 0, -(rH + 30), 'Loading Files : 0%', { color:'#3a3a3a', fontFamily: 'Oswald', fontSize: 30 }).setOrigin(0.5);
 
-        //..
-        let brct = this.add.rectangle ( (_gW - 350 )/2, _gH/2, 350, 40 ).setStrokeStyle (3, 0x0a0a0a).setOrigin(0, 0.5);
-        //..
-        let rW = 340, rH = 30;
+        let recta = this.add.rectangle ( 0, 0, rW + 8, rH + 8 ).setStrokeStyle ( 2, 0x0a0a0a );
 
-        let rct = this.add.rectangle ( (_gW - rW)/2, _gH/2, 5, rH, 0x6a6a6a, 1 ).setOrigin(0, 0.5);
+        let rectb = this.add.rectangle ( -rW/2, -rH/2, 5, rH, 0x3a3a3a, 1 ).setOrigin ( 0 );
+
+        preloadCont.add ( [ txta, recta, rectb ] );
+
 
         this.load.on ('complete', function () {
-            this.scene.start('SceneA');
+
+            preloadCont.visible = false;
+
+            this.showProceed ();
+
         }, this);
 
         this.load.on ('progress', function (progress) {
 
-            txt.setText ( 'Loading : ' + Math.ceil( progress * 100 ) + '%' );
+            preloadCont.last.width = progress * rW;
 
-            if ( (rW * progress) > 5) rct.setSize ( rW * progress, rH );
+            preloadCont.first.text = 'Loading Files : ' +  Math.floor (progress  * 100)  + '%';
 
         });
+        
+        this.load.audioSprite('sfx', 'client/assets/sfx/fx_mixdown.json', [
+            'client/assets/sfx/sfx.ogg',
+            'client/assets/sfx/sfx.mp3'
+        ]);
+        
+        this.load.audio ('properBg', ['client/assets/sfx/starcommander.ogg', 'client/assets/sfx/starcommander.mp3'] );
 
+        this.load.audio ('introBg', ['client/assets/sfx/lounge.ogg', 'client/assets/sfx/lounge.mp3'] );
         
-        // this.load.audioSprite('sfx', 'client/assets/sfx/fx_mixdown.json', [
-        //     'client/assets/sfx/sfx.ogg',
-        //     'client/assets/sfx/sfx.mp3'
-        // ]);
-        
-        // this.load.audio ('properBg', ['client/assets/sfx/starcommander.ogg', 'client/assets/sfx/starcommander.mp3'] );
+        this.load.image('bg', 'client/assets/images/bg.jpg');
 
-        // this.load.audio ('introBg', ['client/assets/sfx/lounge.ogg', 'client/assets/sfx/lounge.mp3'] );
-        
+        this.load.image('title', 'client/assets/images/title.png');
+
+        this.load.image('clickhere', 'client/assets/images/clickhere.png');
+
+        this.load.spritesheet('menu', 'client/assets/images/menu.png', { frameWidth: 368, frameHeight: 380 });
+
+        this.load.spritesheet('proceed', 'client/assets/images/proceed.png', { frameWidth: 180, frameHeight: 180 });
+
         this.load.spritesheet('kinds', 'client/assets/images/kinds.png', { frameWidth: 100, frameHeight: 100 });
 
         this.load.spritesheet('kinds_sm', 'client/assets/images/kinds_sm.png', { frameWidth: 25, frameHeight: 25 });
@@ -54,5 +67,28 @@ class Preloader extends Phaser.Scene {
         this.load.spritesheet('people', 'client/assets/images/people.png', { frameWidth: 100, frameHeight: 135 });
 
     }
+
+    showProceed () {
+
+        var click = this.add.image ( 960, 540, 'clickhere');
+
+        var img = this.add.image ( 960, 540, 'proceed').setInteractive ();
+
+        img.on ('pointerover', function () {
+            this.setFrame (1);
+        });
+        img.on ('pointerdown', function () {
+            this.setFrame (2);
+        });
+        img.on ('pointerout', function () {
+            this.setFrame (0);
+        });
+        img.on ('pointerup', () => {
+
+            this.scene.start('SceneA');
+        });
+
+    }
+    
     
 }

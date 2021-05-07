@@ -1,5 +1,3 @@
-
-
 class SceneB extends Phaser.Scene {
 
     constructor ()

@@ -62,8 +62,6 @@ class Preloader extends Phaser.Scene {
 
         this.load.spritesheet('card', 'client/assets/images/card.png', { frameWidth: 140, frameHeight: 190 });
 
-        this.load.spritesheet('menu_btn', 'client/assets/images/menu_btn.png', { frameWidth: 255, frameHeight: 255 });
-
         this.load.spritesheet('people', 'client/assets/images/people.png', { frameWidth: 100, frameHeight: 135 });
 
     }

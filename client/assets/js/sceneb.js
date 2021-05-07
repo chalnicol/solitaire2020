@@ -875,12 +875,12 @@ class SceneB extends Phaser.Scene {
         cont.add ([ rect, txtr ]);
 
         const bw = 130, 
-              bh = 45, 
+              bh = 50, 
               bs = 20;
 
         //var fx = 960 - ((2 * (bw+bs)-bs)/2) + (bw/2);
 
-        var fx = -(( 2 * ( bw+bs )- bs )/2) + (bw/2),  fy = 35;
+        var fx = -(( 2 * ( bw+bs )- bs )/2) + (bw/2),  fy = 40;
 
         for ( let i = 0; i < btnData.length; i++ ) {
 

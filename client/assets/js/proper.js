@@ -213,42 +213,42 @@ class Proper extends Phaser.Scene {
 
         //create cards on the field..
 
-        // let counter = 0;
+        let counter = 0;
 
-        // for ( let i = 0; i < 7; i++ ) {
+        for ( var i=0; i < 7; i++ ) {
 
-        //     this.fieldCards [i] = [];
+            this.fieldCards [i] = [];
 
-        //     var fieldBox = this.mainContainer.getByName ('field' + i );
+            var fieldBox = this.mainContainer.getByName ('field' + i );
 
-        //     for ( var j = 0; j < (i + 1); j++ ) {
+            for ( var j=0; j < (i + 1); j++ ) {
 
-        //         var card = this.cardContainer.getByName ('card' + ( 51 - counter ));
+                var card = this.cardContainer.getByName ('card' + ( 51 - counter ));
 
-        //         this.cardContainer.bringToTop ( card );
+                this.cardContainer.bringToTop ( card );
 
-        //         card.setFieldPost ( i, j );
+                card.setFieldPost ( i, j );
 
-        //         if ( i == j ) card.flip().enabled();
+                if ( i == j ) card.flip().enabled();
 
-        //         this.add.tween ({
-        //             targets : card,
-        //             x : fieldBox.x,
-        //             y : fieldBox.y + (j * 33),
-        //             duration : 100,
-        //             ease : 'Power2',
-        //             delay : counter * 10
-        //         });
+                this.add.tween ({
+                    targets : card,
+                    x : fieldBox.x,
+                    y : fieldBox.y + (j * 33),
+                    duration : 100,
+                    ease : 'Power2',
+                    delay : counter * 10
+                });
 
-        //         this.fieldCards [i].push ( card );
+                this.fieldCards [i].push ( card );
 
-        //         this.initialCards.pop();
+                this.initialCards.pop();
 
-        //         counter += 1;
+                counter += 1;
 
-        //     }
+            }
 
-        // }
+        }
 
         this.playSound ('ending');
 

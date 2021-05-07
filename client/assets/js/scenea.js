@@ -83,7 +83,7 @@ class SceneA extends Phaser.Scene {
     {
         this.bgmusic.stop();
         
-        this.scene.start ('SceneB', { 'mode' : this.mode });
+        this.scene.start ('Proper', { 'mode' : this.mode });
     }
 
 }

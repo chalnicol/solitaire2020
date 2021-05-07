@@ -1,8 +1,8 @@
-class SceneB extends Phaser.Scene {
+class Proper extends Phaser.Scene {
 
     constructor ()
     {
-        super('SceneB');
+        super('Proper');
     }
 
     create ( data ) 

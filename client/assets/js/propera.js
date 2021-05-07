@@ -10,7 +10,7 @@ class Proper extends Phaser.Scene {
 
         this.mode = data.mode == 0 ? 'easy' : 'hard';
 
-        this.cardDimensions = { w : 130,  h : 170 };
+        this.cardDimensions = { 'w' : 130, 'h' : 170 };
 
         this.isGameOn = false;
 

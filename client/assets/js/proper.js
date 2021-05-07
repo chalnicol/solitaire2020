@@ -171,7 +171,6 @@ class Proper extends Phaser.Scene {
 
         this.fieldCards = [];
 
-        
         this.flippedCardsCount = 0;
 
         this.shownCardsCount = 0;
@@ -181,23 +180,25 @@ class Proper extends Phaser.Scene {
 
         this.cardContainer = this.add.container( 0, 0 );
 
+        //..
         const rndOrd = this.generateRandomOrder ();
 
         const cardData = this.cardDimensions;
         
-        let initBox = this.mainContainer.getByName ('initBox');
+        const strVal = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 
-        const strVal = ['A', '2','3','4','5','6','7','8','9','10','J','Q', 'K' ];
+        //..
+        var initBox = this.mainContainer.getByName ('initBox');
 
         for ( var i = 0; i < rndOrd.length; i++ ) {
 
-            let knd = Math.floor ( rndOrd[i] / 13 ),
+            const knd = Math.floor ( rndOrd[i] / 13 ),
 
-                val = rndOrd [i] % 13,
+                  val = rndOrd [i] % 13,
             
-                str = strVal [ val ];
+                  str = strVal [ val ];
 
-            let crd = new Card ( this, initBox.x, initBox.y, cardData.w, cardData.h, i, knd, val, str, false );
+            var crd = new MyCard ( this, initBox.x, initBox.y, cardData.w, cardData.h, i, knd, val, str, false );
 
             crd.on ('pointerdown', function () {
 
@@ -247,6 +248,7 @@ class Proper extends Phaser.Scene {
 
                 counter += 1;
             }
+
         }
 
         this.playSound ('ending');

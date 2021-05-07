@@ -1,9 +1,9 @@
 
-class Card extends Phaser.GameObjects.Container {
+class MyCard extends Phaser.GameObjects.Container {
 
     constructor(scene, x, y, width, height, id, knd, val, strVal, isFlipped ) {
 
-        super( scene, x, y, null );
+        super( scene, x, y, [] );
         // ...
         this.setSize ( width, height ).setName ('card' + id );
         
@@ -29,11 +29,10 @@ class Card extends Phaser.GameObjects.Container {
 
         const cardbg = scene.add.image ( 0, 0, 'card', isFlipped ? 0 : 1 );
 
-        //const cardbg = scene.add.rectangle ( 0, 0, width, height, isFlipped ? 0xffffff : 0xcecece, 1 ).setStrokeStyle ( 1, 0x0a0a0a );
-
         const txtConfig = { fontSize: height*0.22, fontFamily:'Oswald', color : this.clr == 0 ? 'black' : 'red'  };
 
         let frame = 0;
+
 
         if ( val >= 10 ) {
 
@@ -53,7 +52,7 @@ class Card extends Phaser.GameObjects.Container {
 
         const img  = scene.add.sprite ( 0,0, 'people', frame ).setVisible (isFlipped);
 
-        this.add ( [ cardbg, txt, kind_sm, kind_lg, txte, kind_xs, img ] );
+        this.add ([ cardbg, txt, kind_sm, kind_lg, txte, kind_xs, img ]);
         
 
         this.on('pointerover', () => {
@@ -62,26 +61,25 @@ class Card extends Phaser.GameObjects.Container {
         this.on('pointerout', () => {
             if ( this.isFlipped ) this.setState ('idle');
         });
-        this.on('pointerover', () => {
-
-        });
         
         scene.add.existing(this);
 
     }
 
     setState ( state ){
+
         switch (state) {
             case 'hovered':
                 this.first.setTint ( 0xffffee );
                 break;
             case 'idle':
-                //..
                 this.first.clearTint ();
                 break;
             default:
+                //..
                 break;
         }
+
     }
     
     flip ( isUp = true ) {

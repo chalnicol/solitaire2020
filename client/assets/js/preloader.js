@@ -4,7 +4,15 @@ class Preloader extends Phaser.Scene {
     {
         super('Preloader');
     }
+
     preload ()
+    {
+
+    }
+    create () {
+        this.add.text ( 960, 540, 'chalnicol', { color: '#333', fontFamily:'Oswald', fontSize:50 });
+    }
+    preloada ()
     {
         
          

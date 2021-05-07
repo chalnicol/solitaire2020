@@ -5,7 +5,11 @@ class Proper extends Phaser.Scene {
         super('Proper');
     }
 
-    create ( data ) 
+    create () {
+        this.add.rectangle ( 100, 100, 100, 100, 0xffff00, 1 );
+    }
+
+    creates ( data ) 
     {
 
         this.mode = data.mode == 0 ? 'easy' : 'hard';
@@ -22,7 +26,12 @@ class Proper extends Phaser.Scene {
 
         this.initControls();
 
-        this.time.delayedCall ( 300, this.initCards, [], this );
+        this.time.delayedCall ( 300, () => {
+
+            this.initCards ();
+
+        }, [], this );
+
 
     }
 

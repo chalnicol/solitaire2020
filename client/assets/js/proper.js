@@ -195,7 +195,7 @@ class Proper extends Phaser.Scene {
 
                   val = rndOrd [i] % 13,
             
-                  str = strVal [ val ];
+                  str = strVal [val];
 
             var crd = new MyCard ( this, initBox.x, initBox.y, cardData.w, cardData.h, i, knd, val, str, false );
 
@@ -242,9 +242,10 @@ class Proper extends Phaser.Scene {
 
                 this.fieldCards [i].push ( card );
 
-                this.initialCards.pop();
+                //this.initialCards.pop();
 
                 counter += 1;
+
             }
 
         }

@@ -15,8 +15,5 @@ class CardBox extends Phaser.GameObjects.Container {
         scene.add.existing(this);
 
     }
-
-
-
     
 }

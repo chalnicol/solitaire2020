@@ -48,7 +48,7 @@ class SceneA extends Phaser.Scene {
         for ( let i = 0; i < 2; i++ ) {
 
             //var btn = new MyButton (this, 960, 600+ (i*70), 200, 60, 'but'+i, '', '', 0, but[i] );
-            var btn = this.add.image ( 720 + i*450, 650, 'menu', i ).setInteractive();
+            var btn = this.add.image ( 720 + i*450, 700, 'menu', i ).setInteractive();
 
             btn.on ('pointerover', function () {
                 //..

@@ -3,8 +3,8 @@
 <head>
 
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1.0, user-scalable=0">
-	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
 	
 	<meta property="og:title" content="Solitaire" />
 	<meta property="og:type" content="Mobile and PC Games" />
@@ -16,7 +16,6 @@
 	<link rel="shortcut icon" href="client/assets/images/icons/sv_icon.ico">
 	<link rel="apple-touch-icon" href="client/assets/images/icons/sv_icon.png">
 
-	
 	<script src="client/assets/js/phaser/phaser.min.js"></script>
 
 	<script src="client/assets/js/buttons.js"></script>
@@ -40,20 +39,24 @@
 
 	<style>
 
-		@import url('https://fonts.googleapis.com/css2?family=Coda:wght@800&family=Oswald:wght@700&family=Poppins:wght@300&display=swap');
-
+		@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap');
+		
 		html, body {
 
 			padding: 0;
 			margin:0;
-
+			height: 100%;
+			font-family: Arial, Helvetica, sans-serif;
+			background: #ccc url('client/assets/images/background.jpg') repeat;
 		}
 
-		
+
 	</style>
 
 </head>
 <body>
-	<div id="game_div"></div>
+
+    <div id="game_div"></div>
+    
 </body>
 </html>

@@ -7,16 +7,10 @@ class SceneB extends Phaser.Scene {
         super('SceneB');
     }
 
-    init ( data ) {
-
-        console.log ( data );
+    create ( data ) 
+    {
 
         this.mode = data.mode == 0 ? 'easy' : 'hard';
-
-    }
-
-    create () 
-    {
 
         this.cardDimensions = { w : 130,  h : 170 };
 

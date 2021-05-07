@@ -196,7 +196,7 @@ class Proper extends Phaser.Scene {
             
                 str = strVal [ val ];
 
-            let crd = new Card ( this, initBox.x, initBox.y, cardData.w, cardData.h, i, knd, val, str, false );
+            let crd = new MyCard ( this, initBox.x, initBox.y, cardData.w, cardData.h, i, knd, val, str, false );
 
             crd.on ('pointerdown', function () {
 

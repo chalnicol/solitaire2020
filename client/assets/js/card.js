@@ -121,6 +121,8 @@ class MyCard extends Phaser.GameObjects.Container {
 
     setHome ( homePost ) {
 
+        this.fieldData = { 'r' : -1, 'c' : -1 };
+
         this.homePost = homePost;
 
         this.currentPost = 'home';

@@ -12,6 +12,8 @@ class Proper extends Phaser.Scene {
 
         this.cardDimensions = { 'w' : 130, 'h' : 170 };
 
+        this.homeDuration = 250;
+
         this.isGameOn = false;
 
         this.add.image ( 960, 540, 'bg');
@@ -387,7 +389,7 @@ class Proper extends Phaser.Scene {
         this.playSound('clickb');
     }
 
-    moveCard ( card, post ) {
+    moveCard ( card, post, tduration = 100, tdelay = 0 ) {
 
         this.cardContainer.bringToTop ( card );
 
@@ -395,8 +397,9 @@ class Proper extends Phaser.Scene {
             targets : card,
             x : post.x, 
             y : post.y, 
-            duration : 100,
-            ease : "Quad.easeIn"
+            duration : tduration,
+            ease : "Quad.easeIn",
+            delay: tdelay
         });
 
 
@@ -415,7 +418,7 @@ class Proper extends Phaser.Scene {
         //or get field position if available
         var fieldPost = this.getFieldPosition ( card ); 
 
-
+        //console.log ( homePost, fieldPost, prevPost );
         if ( homePost != null ) {
 
             this.playSound('clickb');
@@ -475,7 +478,7 @@ class Proper extends Phaser.Scene {
 
             this.resultAction ( prevPost, card, crdIsOverlapped );
 
-            if ( card.currentPost != 'home' ) this.sendHomers ();
+            if (prevPost.post != 'home' ) this.sendHomers ();
 
 
         }else {
@@ -485,8 +488,6 @@ class Proper extends Phaser.Scene {
             console.log ('error..');
 
         }
-
-        //this.playSound('clickb');
 
     }
 
@@ -676,8 +677,6 @@ class Proper extends Phaser.Scene {
 
     sendHomers  () {
 
-        var timerDuration = 250;
-
         var homers = this.getHomers ();
 
         if ( homers.length > 0 ) {
@@ -710,18 +709,9 @@ class Proper extends Phaser.Scene {
 
                 var hme = this.mainContainer.getByName ('home' + homers[i].home );
 
-                hme.isTaken = true;
-                hme.topCardValue = crd.val;
-                hme.knd = crd.knd;
+                hme.setTopCardValue ( crd.val, crd.knd );
 
-                this.tweens.add ({
-                    targets : crd,
-                    x : hme.x,
-                    y : hme.y, 
-                    duration : timerDuration,
-                    ease : 'Power3',
-                    delay : (i * timerDuration)
-                });
+                this.moveCard ( crd, { x:hme.x, y: hme.y }, this.homeDuration, i*this.homeDuration );
 
                 crd.setHome ( homers[i].home );
 
@@ -729,19 +719,21 @@ class Proper extends Phaser.Scene {
                
             } 
 
-            this.time.delayedCall ( ( homers.length * timerDuration ), () => {
+            this.time.delayedCall ((homers.length * this.homeDuration), () => {
 
                 this.playSound ('flick');
 
                 this.sendHomers();
 
             }, [], this );
+
+            if ( this.homeDuration > 20 ) this.homeDuration *= 0.9;
            
-            timerDuration *= 0.9;
+            
 
         }else {
 
-            timerDuration = 150;
+            this.homeDuration = 150;
 
             this.time.delayedCall ( 300, function () {
 
@@ -819,9 +811,9 @@ class Proper extends Phaser.Scene {
             
         }
 
-        if ( this.topCardCount > 0 ) {
+        if ( this.flippedCardsCount > 0 ) {
 
-            var cnt = this.initialCards.length - this.topCardCount ;
+            var cnt = this.initialCards.length - this.flippedCardsCount ;
 
             var initBoxTopCard = this.initialCards [ cnt ];
 

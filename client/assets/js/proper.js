@@ -177,7 +177,6 @@ class Proper extends Phaser.Scene {
 
 
         //create cards on initbox..
-
         this.cardContainer = this.add.container( 0, 0 );
 
         //..
@@ -192,7 +191,7 @@ class Proper extends Phaser.Scene {
 
         for ( var i = 0; i < rndOrd.length; i++ ) {
 
-            const knd = Math.floor ( rndOrd[i] / 13 ),
+            const knd = Math.floor ( rndOrd[i]/13 ),
 
                   val = rndOrd [i] % 13,
             
@@ -214,7 +213,6 @@ class Proper extends Phaser.Scene {
 
         //create cards on the field..
 
-
         let counter = 0;
 
         for ( let i = 0; i < 7; i++ ) {
@@ -233,7 +231,7 @@ class Proper extends Phaser.Scene {
 
                 if ( i == j ) card.flip().enabled();
 
-                this.tweens.add ({
+                this.add.tween ({
                     targets : card,
                     x : fieldBox.x,
                     y : fieldBox.y + (j * 33),
@@ -252,7 +250,6 @@ class Proper extends Phaser.Scene {
         }
 
         this.playSound ('ending');
-
 
     }
 

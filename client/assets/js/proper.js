@@ -21,6 +21,9 @@ class Proper extends Phaser.Scene {
 
         this.initControls();
 
+        this.time.delayedCall ( 300, () => this.initCards(), [], this );
+
+
     }
 
     initMenuSound () 
@@ -34,7 +37,8 @@ class Proper extends Phaser.Scene {
 
     }
 
-    initCardsHolder () {
+    initCardsHolder () 
+    {
 
         this.mainContainer = this.add.container (0, 0);
 
@@ -101,7 +105,8 @@ class Proper extends Phaser.Scene {
 
     }
 
-    initControls () { 
+    initControls () 
+    { 
 
         var cont = this.add.container ( 960, 115 );
 
@@ -152,6 +157,128 @@ class Proper extends Phaser.Scene {
             
         }
 
+    }
+
+    initCards () {
+
+        this.isGameOn = true;
+
+        this.cardsMoving = false;
+        
+        this.vel = 150;
+
+        this.initialCards = [];
+
+        this.fieldCards = [];
+
+        
+        this.flippedCardsCount = 0;
+
+        this.shownCardsCount = 0;
+
+
+        //create cards on initbox..
+
+        this.cardContainer = this.add.container( 0, 0 );
+
+        const rndOrd = this.generateRandomOrder ();
+
+        const cardData = this.cardDimensions;
+        
+        let initBox = this.mainContainer.getByName ('initBox');
+
+        const strVal = ['A', '2','3','4','5','6','7','8','9','10','J','Q', 'K' ];
+
+        for ( var i = 0; i < rndOrd.length; i++ ) {
+
+            let knd = Math.floor ( rndOrd[i] / 13 ),
+
+                val = rndOrd [i] % 13,
+            
+                str = strVal [ val ];
+
+            let crd = new Card ( this, initBox.x, initBox.y, cardData.w, cardData.h, i, knd, val, str, false );
+
+            crd.on ('pointerdown', function () {
+
+                this.scene.cardClick ( this );
+
+            });
+
+            this.cardContainer.add ( crd );
+
+            this.initialCards.push ( crd );
+
+        }
+
+        //create cards on the field..
+
+
+        let counter = 0;
+
+        for ( let i = 0; i < 7; i++ ) {
+
+            this.fieldCards [i] = [];
+
+            var fieldBox = this.mainContainer.getByName ('field' + i );
+
+            for ( var j = 0; j < (i + 1); j++ ) {
+
+                var card = this.cardContainer.getByName ('card' + ( 51 - counter ));
+
+                this.cardContainer.bringToTop ( card );
+
+                card.setFieldPost ( i, j );
+
+                if ( i == j ) card.flip().enabled();
+
+                this.tweens.add ({
+                    targets : card,
+                    x : fieldBox.x,
+                    y : fieldBox.y + (j * 33),
+                    duration : 100,
+                    ease : 'Power2',
+                    delay : counter * 10
+                });
+
+                this.fieldCards [i].push ( card );
+
+                this.initialCards.pop();
+
+                counter += 1;
+            }
+        }
+
+        this.playSound ('ending');
+
+
+    }
+
+    generateRandomOrder  () {
+
+        let tempArr = [];
+
+        for ( var i = 0; i < 52; i++ ) {
+            tempArr.push (i);
+        }
+
+        let finArr = [];
+
+        while ( tempArr.length > 0 ) {
+
+            var rnd = Math.floor ( Math.random() * tempArr.length );
+
+            finArr.push ( tempArr [ rnd ] );
+
+            tempArr.splice ( rnd, 1 );
+        }
+
+        return finArr;
+
+    }
+
+    playSound  ( snd, vol=0.5) {
+        this.soundFx.play ( snd, { volume : vol });
     }
 
     
